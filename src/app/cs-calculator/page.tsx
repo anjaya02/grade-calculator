@@ -8,6 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, BookOpen, Calculator, Info } from "lucide-react";
+import Footer from "@/components/Footer";
 
 /* ------------------------------------------------------------------ */
 /*                        MODULE   DATA                               */
@@ -660,13 +661,15 @@ export default function CSCalculatorPage() {
       </div>
 
       {/* -------- Disclaimer -------- */}
-      <div className="mt-8 bg-amber-50 border border-amber-200 rounded-md p-4 text-amber-800 text-sm text-center">
+      <div className="mt-4 bg-amber-50 border border-amber-200 rounded-md p-4 text-amber-800 text-sm text-center">
         <p>
           <strong>Disclaimer:</strong> This tool is not officially affiliated
           with IIT. Results shown are approximate and for guidance purposes
           only. Please consult your academic advisor for final grades.
         </p>
       </div>
+      {/* Enhanced Footer */}
+      <Footer />
     </div>
   );
 }
