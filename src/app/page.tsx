@@ -1,7 +1,20 @@
-import Link from "next/link"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
-import { GraduationCap, BookOpen, Code, User } from "lucide-react"
+import Link from "next/link";
+import { Button } from "@/components/ui/button";
+import {
+  Card,
+  CardContent,
+  CardDescription,
+  CardHeader,
+  CardTitle,
+} from "@/components/ui/card";
+import { GraduationCap, BookOpen, Code, User } from "lucide-react";
+import { CheckCircle, XCircle } from "lucide-react";
+import { Github, Linkedin } from "lucide-react";
+
+export const metadata = {
+  title: "Grade Calculator",
+  description: "Calculate your CS or SE degree classification easily.",
+};
 
 export default function HomePage() {
   return (
@@ -12,8 +25,12 @@ export default function HomePage() {
           <div className="flex items-center justify-center gap-3">
             <GraduationCap className="h-12 w-12 text-blue-600" />
             <div className="text-center">
-              <h1 className="text-2xl font-bold text-gray-900">Degree Class Calculator</h1>
-              <p className="text-sm text-gray-600">Informatics Institute of Technology</p>
+              <h1 className="text-2xl font-bold text-gray-900">
+                Degree Class Calculator
+              </h1>
+              <p className="text-sm text-gray-600">
+                Informatics Institute of Technology
+              </p>
             </div>
           </div>
         </div>
@@ -22,30 +39,41 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="flex-1 max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="text-center mb-12">
-          <h2 className="text-4xl font-bold text-gray-900 mb-4">Calculate Your Degree Classification</h2>
+          <h2 className="text-4xl font-bold text-gray-900 mb-4">
+            Calculate Your Degree Classification
+          </h2>
           <p className="text-xl text-gray-600 max-w-2xl mx-auto">
-            Track your academic progress and predict your final degree classification for CS & SE degrees
+            Track your academic progress and predict your final degree
+            classification for CS & SE degrees
           </p>
         </div>
 
         {/* Classification Categories */}
         <div className="mb-12">
-          <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">Classification Categories</h3>
+          <h3 className="text-2xl font-bold text-center text-gray-900 mb-8">
+            Classification Categories
+          </h3>
+
           <div className="grid sm:grid-cols-2 lg:grid-cols-5 gap-4">
-            <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
+            {/* First Class */}
+            <Card className="bg-gradient-to-br from-emerald-50 to-emerald-100 border-emerald-200">
               <CardContent className="p-6 text-center">
                 <div className="text-3xl mb-2">🥇</div>
-                <h4 className="font-bold text-yellow-800 mb-1">First Class</h4>
-                <p className="text-sm text-yellow-700">70% and above</p>
+                <h4 className="font-bold text-emerald-800 mb-1">First Class</h4>
+                <p className="text-sm text-emerald-700">70% and above</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-green-50 to-green-100 border-green-200">
+
+            {/* Second Upper */}
+            <Card className="bg-gradient-to-br from-sky-50 to-sky-100 border-sky-200">
               <CardContent className="p-6 text-center">
                 <div className="text-3xl mb-2">🥈</div>
-                <h4 className="font-bold text-green-800 mb-1">Second Upper</h4>
-                <p className="text-sm text-green-700">60% - 69%</p>
+                <h4 className="font-bold text-sky-800 mb-1">Second Upper</h4>
+                <p className="text-sm text-sky-700">60% - 69%</p>
               </CardContent>
             </Card>
+
+            {/* Second Lower */}
             <Card className="bg-gradient-to-br from-orange-50 to-orange-100 border-orange-200">
               <CardContent className="p-6 text-center">
                 <div className="text-3xl mb-2">🥉</div>
@@ -53,18 +81,22 @@ export default function HomePage() {
                 <p className="text-sm text-orange-700">50% - 59%</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-purple-50 to-purple-100 border-purple-200">
+
+            {/* Pass */}
+            <Card className="bg-gradient-to-br from-yellow-50 to-yellow-100 border-yellow-200">
               <CardContent className="p-6 text-center">
-                <div className="text-3xl mb-2">📜</div>
-                <h4 className="font-bold text-purple-800 mb-1">Pass</h4>
-                <p className="text-sm text-purple-700">40% - 49%</p>
+                <CheckCircle className="w-8 h-8 text-yellow-600 mx-auto mb-2" />
+                <h4 className="font-bold text-yellow-800 mb-1">Pass</h4>
+                <p className="text-sm text-yellow-700">40% - 49%</p>
               </CardContent>
             </Card>
-            <Card className="bg-gradient-to-br from-red-50 to-red-100 border-red-200">
+
+            {/* Fail */}
+            <Card className="bg-gradient-to-br from-rose-50 to-rose-100 border-rose-200">
               <CardContent className="p-6 text-center">
-                <div className="text-3xl mb-2">❌</div>
-                <h4 className="font-bold text-red-800 mb-1">Fail</h4>
-                <p className="text-sm text-red-700">Below 40%</p>
+                <XCircle className="w-8 h-8 text-rose-600 mx-auto mb-2" />
+                <h4 className="font-bold text-rose-800 mb-1">Fail</h4>
+                <p className="text-sm text-rose-700">Below 40%</p>
               </CardContent>
             </Card>
           </div>
@@ -72,8 +104,10 @@ export default function HomePage() {
           {/* Disclaimer Alert */}
           <div className="mt-6 bg-amber-50 border border-amber-200 rounded-md p-4 text-amber-800 text-sm text-center">
             <p>
-              <strong>Disclaimer:</strong> This tool is not officially affiliated with IIT. Results shown are
-              approximate and for guidance purposes only. Please consult your academic advisor for final grades.
+              <strong>Disclaimer:</strong> This tool is not officially
+              affiliated with IIT. Results shown are approximate and for
+              guidance purposes only. Please consult your academic advisor for
+              final grades.
             </p>
           </div>
         </div>
@@ -87,7 +121,9 @@ export default function HomePage() {
                 <BookOpen className="h-8 w-8 text-blue-600" />
               </div>
               <CardTitle className="text-2xl">Computer Science</CardTitle>
-              <CardDescription className="text-base">CS degree with L5/L6 weighted calculation</CardDescription>
+              <CardDescription className="text-base">
+                CS degree with L5/L6 weighted calculation
+              </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col">
               <ul className="space-y-2 text-sm text-gray-600 mb-6 flex-1">
@@ -97,7 +133,9 @@ export default function HomePage() {
                 <li>• FYP and SDGP mandatory</li>
               </ul>
               <Link href="/cs-calculator" className="w-full mt-auto">
-                <Button className="w-full bg-blue-600 hover:bg-blue-700">Calculate CS Degree</Button>
+                <Button className="w-full bg-blue-600 hover:bg-blue-700">
+                  Calculate CS Degree
+                </Button>
               </Link>
             </CardContent>
           </Card>
@@ -109,7 +147,9 @@ export default function HomePage() {
                 <Code className="h-8 w-8 text-purple-600" />
               </div>
               <CardTitle className="text-2xl">Software Engineering</CardTitle>
-              <CardDescription className="text-base">SE degree with L5/L6 weighted calculation</CardDescription>
+              <CardDescription className="text-base">
+                SE degree with L5/L6 weighted calculation
+              </CardDescription>
             </CardHeader>
             <CardContent className="flex-1 flex flex-col">
               <ul className="space-y-2 text-sm text-gray-600 mb-6 flex-1">
@@ -119,7 +159,9 @@ export default function HomePage() {
                 <li>• FYP and SDGP mandatory</li>
               </ul>
               <Link href="/se-calculator" className="w-full mt-auto">
-                <Button className="w-full bg-purple-600 hover:bg-purple-700">Calculate SE Degree</Button>
+                <Button className="w-full bg-purple-600 hover:bg-purple-700">
+                  Calculate SE Degree
+                </Button>
               </Link>
             </CardContent>
           </Card>
@@ -127,30 +169,55 @@ export default function HomePage() {
       </main>
 
       {/* Enhanced Footer */}
-      <footer className="bg-gradient-to-r from-indigo-600 via-purple-600 to-blue-700 text-white mt-16">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-10">
+      <footer className="bg-gray-900 text-gray-200 mt-20">
+        <div className="max-w-7xl mx-auto px-6 py-12">
           <div className="text-center">
-            <div className="mb-6">
-              <div className="inline-flex items-center justify-center w-16 h-16 bg-white/20 backdrop-blur-sm rounded-full mb-4">
-                <User className="h-8 w-8 text-white" />
+            <div className="flex justify-center mb-4">
+              <div className="bg-gray-700 p-4 rounded-full">
+                <User className="h-6 w-6 text-white" />
               </div>
             </div>
-            <h3 className="text-2xl font-bold mb-3 text-white">Anjaya Induwara</h3>
-            <div className="space-y-2 mb-4">
-              <p className="text-indigo-200 text-lg">anjaya.20234069@iit.ac.lk</p>
-              <p className="text-indigo-200">CS undergraduate</p>
+
+            <h3 className="text-xl font-semibold text-white">
+              Anjaya Induwara
+            </h3>
+            <p className="text-gray-400">anjaya.20234069@iit.ac.lk</p>
+            <p className="text-gray-400 mb-4">CS Undergraduate</p>
+
+            <div className="inline-block bg-gray-700 text-gray-300 px-4 py-1.5 rounded-full text-sm font-medium">
+              23/24 PT CS
             </div>
-            <div className="inline-block bg-gradient-to-r from-blue-500 to-purple-500 rounded-full px-6 py-3 shadow-lg">
-              <p className="text-white font-bold text-lg">23/24 PT CS</p>
+
+            <div className="flex justify-center gap-6 mt-4">
+              <a
+                href="https://github.com/anjaya02/grade-calculator"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-gray-300 hover:text-white transition"
+              >
+                <Github className="h-5 w-5" />
+                GitHub
+              </a>
+              <a
+                href="https://www.linkedin.com/in/anjaya02"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center gap-2 text-gray-300 hover:text-white transition"
+              >
+                <Linkedin className="h-5 w-5" />
+                LinkedIn
+              </a>
             </div>
-            <div className="mt-6 pt-6 border-t border-white/20">
-              <p className="text-indigo-200 text-sm">
-                Degree Classification Calculator • Built with Next.js & Tailwind CSS
+
+            <div className="mt-8 border-t border-gray-700 pt-4">
+              <p className="text-sm text-gray-500">
+                © {new Date().getFullYear()} Degree Classification Calculator •
+                Built with Next.js & Tailwind CSS
               </p>
             </div>
           </div>
         </div>
       </footer>
     </div>
-  )
+  );
 }
