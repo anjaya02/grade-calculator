@@ -9,7 +9,10 @@ import { Label } from "@/components/ui/label";
 import { Checkbox } from "@/components/ui/checkbox";
 import { ArrowLeft, BookOpen, Calculator, Info } from "lucide-react";
 
-// CS Module Data
+/* ------------------------------------------------------------------ */
+/*                        MODULE   DATA                               */
+/* ------------------------------------------------------------------ */
+
 const csModules = {
   l5: {
     core: [
@@ -132,17 +135,42 @@ const csModules = {
       { id: "6NTCM009W", name: "Internet of Things", credits: 20 },
     ],
   },
-};
+} as const;
+
+/* ------------------------------------------------------------------ */
+/*                      CONSTANTS & HELPERS                           */
+/* ------------------------------------------------------------------ */
+
+const SDGP_ID = "5COSC021C";
+const FYP_ID = "6COSC023C";
+
+/* ------------------------------------------------------------------ */
+/*                          COMPONENT                                 */
+/* ------------------------------------------------------------------ */
 
 export default function CSCalculatorPage() {
-  const [l5CoreMarks, setL5CoreMarks] = useState({});
-  const [l5SelectedOptional, setL5SelectedOptional] = useState(new Set());
-  const [l5OptionalMarks, setL5OptionalMarks] = useState({});
-  const [l6CoreMarks, setL6CoreMarks] = useState({});
-  const [l6SelectedOptional, setL6SelectedOptional] = useState(new Set());
-  const [l6OptionalMarks, setL6OptionalMarks] = useState({});
+  /* ---------- state ---------- */
+  const [l5CoreMarks, setL5CoreMarks] = useState<Record<string, number>>({});
+  const [l5SelectedOptional, setL5SelectedOptional] = useState<Set<string>>(
+    new Set()
+  );
+  const [l5OptionalMarks, setL5OptionalMarks] = useState<
+    Record<string, number>
+  >({});
+  const [l6CoreMarks, setL6CoreMarks] = useState<Record<string, number>>({});
+  const [l6SelectedOptional, setL6SelectedOptional] = useState<Set<string>>(
+    new Set()
+  );
+  const [l6OptionalMarks, setL6OptionalMarks] = useState<
+    Record<string, number>
+  >({});
 
-  const handleOptionalToggle = (level, moduleId, checked) => {
+  /* ---------- toggle optional (max 2) ---------- */
+  const handleOptionalToggle = (
+    level: "l5" | "l6",
+    moduleId: string,
+    checked: boolean
+  ) => {
     const selectedSet =
       level === "l5" ? l5SelectedOptional : l6SelectedOptional;
     const setSelected =
@@ -150,23 +178,28 @@ export default function CSCalculatorPage() {
     const setMarks = level === "l5" ? setL5OptionalMarks : setL6OptionalMarks;
     const marks = level === "l5" ? l5OptionalMarks : l6OptionalMarks;
 
-    const newSelected = new Set(selectedSet);
+    const newSet = new Set(selectedSet);
     if (checked) {
-      // Prevent adding more than two
-      if (newSelected.size >= 2) return;
-      newSelected.add(moduleId);
+      if (newSet.size >= 2) return; // cap at 2
+      newSet.add(moduleId);
     } else {
-      newSelected.delete(moduleId);
-      const newMarks = { ...marks };
-      delete newMarks[moduleId];
-      setMarks(newMarks);
+      newSet.delete(moduleId);
+      const copy = { ...marks };
+      delete copy[moduleId];
+      setMarks(copy);
     }
-    setSelected(newSelected);
+    setSelected(newSet);
   };
 
-  const handleMarkChange = (level, type, moduleId, mark) => {
-    const numMark = parseFloat(mark);
-    const setMarks =
+  /* ---------- handle mark change ---------- */
+  const handleMarkChange = (
+    level: "l5" | "l6",
+    type: "core" | "optional",
+    moduleId: string,
+    value: string
+  ) => {
+    const num = parseFloat(value);
+    const setter =
       level === "l5"
         ? type === "core"
           ? setL5CoreMarks
@@ -175,154 +208,204 @@ export default function CSCalculatorPage() {
         ? setL6CoreMarks
         : setL6OptionalMarks;
 
-    if (!isNaN(numMark) && numMark >= 0 && numMark <= 100) {
-      setMarks((prev) => ({ ...prev, [moduleId]: numMark }));
-    } else if (mark === "") {
-      setMarks((prev) => {
-        const newMarks = { ...prev };
-        delete newMarks[moduleId];
-        return newMarks;
+    if (!isNaN(num) && num >= 0 && num <= 100) {
+      setter((prev) => ({ ...prev, [moduleId]: num }));
+    } else if (value === "") {
+      setter((prev) => {
+        const c = { ...prev };
+        delete c[moduleId];
+        return c;
       });
     }
   };
 
-  const getClassification = (average) => {
-    if (average >= 70)
-      return {
-        class: "First Class",
-        color: "text-green-800",
-        bg: "bg-green-100",
-      };
-    if (average >= 60)
-      return {
-        class: "Second Upper",
-        color: "text-blue-800",
-        bg: "bg-blue-100",
-      };
-    if (average >= 50)
-      return {
-        class: "Second Lower",
-        color: "text-orange-800",
-        bg: "bg-orange-100",
-      };
-    if (average >= 40)
-      return { class: "Pass", color: "text-purple-800", bg: "bg-purple-100" };
-    return { class: "Fail", color: "text-red-800", bg: "bg-red-100" };
+  /* ------------------------------------------------------------------ */
+  /*                     VALIDATION: all marks in?                      */
+  /* ------------------------------------------------------------------ */
+  const allMarksEntered = () => {
+    const l5CompleteCore = csModules.l5.core.every(
+      (m) => l5CoreMarks[m.id] !== undefined
+    );
+    const l6CompleteCore = csModules.l6.core.every(
+      (m) => l6CoreMarks[m.id] !== undefined
+    );
+
+    const l5CompleteOpt =
+      l5SelectedOptional.size === 2 &&
+      [...l5SelectedOptional].every((id) => l5OptionalMarks[id] !== undefined);
+
+    const l6CompleteOpt =
+      l6SelectedOptional.size === 2 &&
+      [...l6SelectedOptional].every((id) => l6OptionalMarks[id] !== undefined);
+
+    return l5CompleteCore && l6CompleteCore && l5CompleteOpt && l6CompleteOpt;
   };
 
+  /* ------------------------------------------------------------------ */
+  /*                 BUILD FLAT LIST OF ALL ASSESSED MODULES            */
+  /* ------------------------------------------------------------------ */
+  const buildModuleList = () => {
+    const attach = (
+      arr: any[],
+      level: "l5" | "l6",
+      type: "core" | "optional"
+    ) =>
+      arr.map((m) => ({
+        ...m,
+        level,
+        type,
+        mark:
+          level === "l5"
+            ? type === "core"
+              ? l5CoreMarks[m.id]
+              : l5OptionalMarks[m.id]
+            : type === "core"
+            ? l6CoreMarks[m.id]
+            : l6OptionalMarks[m.id],
+      }));
+
+    const list: {
+      id: string;
+      name: string;
+      credits: number;
+      mark: number;
+      level: "l5" | "l6";
+      type: "core" | "optional";
+    }[] = [];
+
+    list.push(...attach(csModules.l5.core, "l5", "core"));
+    list.push(...attach(csModules.l6.core, "l6", "core"));
+
+    l5SelectedOptional.forEach((id) => {
+      const mod = csModules.l5.optional.find((m) => m.id === id);
+      if (mod) list.push(...attach([mod], "l5", "optional"));
+    });
+    l6SelectedOptional.forEach((id) => {
+      const mod = csModules.l6.optional.find((m) => m.id === id);
+      if (mod) list.push(...attach([mod], "l6", "optional"));
+    });
+
+    return list;
+  };
+
+  /* ------------------------------------------------------------------ */
+  /*                 MAIN CALCULATION (drop-lowest rule)                */
+  /* ------------------------------------------------------------------ */
   const calculateResults = () => {
-    // L5 calculations
-    const l5CoreCredits = csModules.l5.core.reduce(
-      (sum, m) => sum + m.credits,
-      0
-    );
-    const l5CoreWeighted = csModules.l5.core.reduce(
-      (sum, m) => sum + (l5CoreMarks[m.id] || 0) * m.credits,
-      0
-    );
-    const l5OptWithMarks = Array.from(l5SelectedOptional)
-      .map((id) => {
-        const m = csModules.l5.optional.find((x) => x.id === id);
-        const mark = l5OptionalMarks[id];
-        return m && mark !== undefined ? { ...m, mark } : null;
-      })
-      .filter(Boolean);
-    let l5OptToUse = l5OptWithMarks;
-    if (l5OptWithMarks.length > 2) {
-      l5OptToUse = l5OptWithMarks.sort((a, b) => a.mark - b.mark).slice(1, 3);
-    }
-    const l5OptCredits = l5OptToUse.reduce((sum, m) => sum + m.credits, 0);
-    const l5OptWeighted = l5OptToUse.reduce(
-      (sum, m) => sum + m.mark * m.credits,
-      0
-    );
-    const l5TotalCredits = l5CoreCredits + l5OptCredits;
-    const l5Average =
-      l5TotalCredits > 0
-        ? (l5CoreWeighted + l5OptWeighted) / l5TotalCredits
-        : 0;
+    if (!allMarksEntered()) return null;
 
-    // L6 calculations
-    const l6CoreCredits = csModules.l6.core.reduce(
-      (sum, m) => sum + m.credits,
-      0
-    );
-    const l6CoreWeighted = csModules.l6.core.reduce(
-      (sum, m) => sum + (l6CoreMarks[m.id] || 0) * m.credits,
-      0
-    );
-    const l6OptWithMarks = Array.from(l6SelectedOptional)
-      .map((id) => {
-        const m = csModules.l6.optional.find((x) => x.id === id);
-        const mark = l6OptionalMarks[id];
-        return m && mark !== undefined ? { ...m, mark } : null;
-      })
-      .filter(Boolean);
-    let l6OptToUse = l6OptWithMarks;
-    if (l6OptWithMarks.length > 2) {
-      l6OptToUse = l6OptWithMarks.sort((a, b) => a.mark - b.mark).slice(1, 3);
-    }
-    const l6OptCredits = l6OptToUse.reduce((sum, m) => sum + m.credits, 0);
-    const l6OptWeighted = l6OptToUse.reduce(
-      (sum, m) => sum + m.mark * m.credits,
-      0
-    );
-    const l6TotalCredits = l6CoreCredits + l6OptCredits;
-    const l6Average =
-      l6TotalCredits > 0
-        ? (l6CoreWeighted + l6OptWeighted) / l6TotalCredits
-        : 0;
+    const modules = buildModuleList();
 
-    const finalAverage =
-      l5Average > 0 && l6Average > 0
-        ? (1 / 3) * l5Average + (2 / 3) * l6Average
-        : 0;
+    // Find lowest eligible 20-credit module (exclude SDGP & FYP)
+    const dropCandidates = modules.filter(
+      (m) => m.credits === 20 && m.id !== SDGP_ID && m.id !== FYP_ID
+    );
+    const dropped =
+      dropCandidates.length > 0
+        ? dropCandidates.reduce((low, cur) => (cur.mark < low.mark ? cur : low))
+        : null;
+
+    const kept = dropped ? modules.filter((m) => m.id !== dropped.id) : modules;
+
+    // Aggregate by level
+    const sumCredits = (arr: typeof kept) =>
+      arr.reduce((s, m) => s + m.credits, 0);
+    const sumWeighted = (arr: typeof kept) =>
+      arr.reduce((s, m) => s + m.credits * m.mark, 0);
+
+    const l5Mods = kept.filter((m) => m.level === "l5");
+    const l6Mods = kept.filter((m) => m.level === "l6");
+
+    const l5Credits = sumCredits(l5Mods);
+    const l6Credits = sumCredits(l6Mods);
+    const l5Weighted = sumWeighted(l5Mods);
+    const l6Weighted = sumWeighted(l6Mods);
+
+    const l5Average = l5Weighted / l5Credits;
+    const l6Average = l6Weighted / l6Credits;
+    const finalAverage = l5Average / 3 + (2 * l6Average) / 3;
 
     return {
       l5Average,
       l6Average,
       finalAverage,
-      l5Credits: l5TotalCredits,
-      l6Credits: l6TotalCredits,
-      totalCredits: l5TotalCredits + l6TotalCredits,
+      l5Credits,
+      l6Credits,
+      totalCredits: l5Credits + l6Credits,
+      droppedModule: dropped,
     };
   };
 
   const results = calculateResults();
-  const showResults = results.finalAverage > 0 && results.totalCredits === 240;
+  const showResults = results !== null;
 
-  const renderModuleSection = (title, modules, level, type) => {
+  /* ---------- classification band ---------- */
+  const classify = (avg: number) => {
+    if (avg >= 70)
+      return {
+        label: "First Class",
+        bg: "bg-green-100",
+        color: "text-green-800",
+      };
+    if (avg >= 60)
+      return {
+        label: "Second Upper",
+        bg: "bg-blue-100",
+        color: "text-blue-800",
+      };
+    if (avg >= 50)
+      return {
+        label: "Second Lower",
+        bg: "bg-orange-100",
+        color: "text-orange-800",
+      };
+    if (avg >= 40)
+      return { label: "Pass", bg: "bg-purple-100", color: "text-purple-800" };
+    return { label: "Fail", bg: "bg-red-100", color: "text-red-800" };
+  };
+
+  /* ------------------------------------------------------------------ */
+  /*                       RENDER HELPERS                               */
+  /* ------------------------------------------------------------------ */
+  const renderModuleSection = (
+    title: string,
+    modules: typeof csModules.l5.core,
+    level: "l5" | "l6",
+    type: "core" | "optional"
+  ) => {
     const selectedSet =
       level === "l5" ? l5SelectedOptional : l6SelectedOptional;
+
     return (
-      <Card>
+      <Card key={title}>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <BookOpen className="h-5 w-5" /> {title}
             {type === "core" ? (
               <span className="text-sm text-red-600">(Required)</span>
             ) : (
-              <span className="text-sm text-green-600">(Choose any 2)</span>
+              <span className="text-sm text-green-600">(Choose 2)</span>
             )}
           </CardTitle>
         </CardHeader>
         <CardContent className="space-y-4">
-          {modules.map((module) => {
+          {modules.map((mod) => {
             const isCore = type === "core";
-            const isSelected = isCore || selectedSet.has(module.id);
-            const marks = isCore
+            const isSelected = isCore || selectedSet.has(mod.id);
+            const disableCheck =
+              !isCore && !isSelected && selectedSet.size >= 2;
+
+            const markStore = isCore
               ? level === "l5"
                 ? l5CoreMarks
                 : l6CoreMarks
               : level === "l5"
               ? l5OptionalMarks
               : l6OptionalMarks;
-            const disableCheckbox =
-              !isSelected && selectedSet.size >= 2 && type === "optional";
 
             return (
               <Card
-                key={module.id}
+                key={mod.id}
                 className={`transition-all ${
                   isSelected
                     ? isCore
@@ -336,9 +419,9 @@ export default function CSCalculatorPage() {
                     {!isCore && (
                       <Checkbox
                         checked={isSelected}
-                        disabled={disableCheckbox}
-                        onCheckedChange={(checked) =>
-                          handleOptionalToggle(level, module.id, checked)
+                        disabled={disableCheck}
+                        onCheckedChange={(chk) =>
+                          handleOptionalToggle(level, mod.id, chk as boolean)
                         }
                         className="mt-1"
                       />
@@ -346,32 +429,29 @@ export default function CSCalculatorPage() {
                     <div className="flex-1">
                       <div className="flex justify-between items-start mb-2">
                         <div>
-                          <h4 className="font-medium">{module.name}</h4>
+                          <h4 className="font-medium">{mod.name}</h4>
                           <p className="text-sm text-gray-600">
-                            {module.id} • {module.credits} credits
+                            {mod.id} • {mod.credits} credits
                           </p>
                         </div>
                       </div>
                       {(isCore || isSelected) && (
                         <div className="mt-3">
-                          <Label
-                            htmlFor={`mark-${module.id}`}
-                            className="text-sm"
-                          >
+                          <Label htmlFor={`mark-${mod.id}`} className="text-sm">
                             Mark (%)
                           </Label>
                           <Input
-                            id={`mark-${module.id}`}
+                            id={`mark-${mod.id}`}
                             type="number"
-                            min="0"
-                            max="100"
-                            placeholder="Enter mark (0-100)"
-                            value={marks[module.id] ?? ""}
+                            min={0}
+                            max={100}
+                            placeholder="0–100"
+                            value={markStore[mod.id] ?? ""}
                             onChange={(e) =>
                               handleMarkChange(
                                 level,
                                 type,
-                                module.id,
+                                mod.id,
                                 e.target.value
                               )
                             }
@@ -390,8 +470,13 @@ export default function CSCalculatorPage() {
     );
   };
 
+  /* ------------------------------------------------------------------ */
+  /*                             JSX                                    */
+  /* ------------------------------------------------------------------ */
+
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100">
+      {/* -------- Header -------- */}
       <header className="bg-white shadow-sm border-b">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex items-center gap-3">
           <Link href="/">
@@ -411,9 +496,11 @@ export default function CSCalculatorPage() {
         </div>
       </header>
 
+      {/* -------- Body -------- */}
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 grid lg:grid-cols-3 gap-8">
         <div className="lg:col-span-2 space-y-8">
-          <div className="space-y-6">
+          {/* Level 5 */}
+          <section className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">
               Level 5 Modules
             </h2>
@@ -429,9 +516,10 @@ export default function CSCalculatorPage() {
               "l5",
               "optional"
             )}
-          </div>
+          </section>
 
-          <div className="space-y-6">
+          {/* Level 6 */}
+          <section className="space-y-6">
             <h2 className="text-2xl font-bold text-gray-900">
               Level 6 Modules
             </h2>
@@ -447,9 +535,10 @@ export default function CSCalculatorPage() {
               "l6",
               "optional"
             )}
-          </div>
+          </section>
         </div>
 
+        {/* -------- Results card -------- */}
         <div className="space-y-6">
           <Card className="sticky top-8">
             <CardHeader>
@@ -458,13 +547,11 @@ export default function CSCalculatorPage() {
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
-              {showResults ? (
+              {showResults && results ? (
                 <div
                   className={`p-4 rounded-lg ${
-                    getClassification(results.finalAverage).bg
-                  } border-2 ${getClassification(
-                    results.finalAverage
-                  ).bg.replace("bg-", "border-")}`}
+                    classify(results.finalAverage).bg
+                  } border-2`}
                 >
                   <div className="text-center">
                     <div className="text-3xl font-bold text-gray-900 mb-1">
@@ -472,10 +559,10 @@ export default function CSCalculatorPage() {
                     </div>
                     <div
                       className={`text-lg font-bold px-4 py-2 rounded-full ${
-                        getClassification(results.finalAverage).color
+                        classify(results.finalAverage).color
                       }`}
                     >
-                      {getClassification(results.finalAverage).class}
+                      {classify(results.finalAverage).label}
                     </div>
                   </div>
 
@@ -494,22 +581,34 @@ export default function CSCalculatorPage() {
                     </div>
                     <div className="flex justify-between">
                       <span>L5 Credits:</span>
-                      <span className="font-medium">{results.l5Credits}</span>
+                      <span>{results.l5Credits}</span>
                     </div>
                     <div className="flex justify-between">
                       <span>L6 Credits:</span>
-                      <span className="font-medium">{results.l6Credits}</span>
+                      <span>{results.l6Credits}</span>
                     </div>
                     <div className="flex justify-between font-semibold">
                       <span>Total Credits:</span>
                       <span>{results.totalCredits}</span>
                     </div>
+                    {results.droppedModule && (
+                      <div className="flex justify-between">
+                        <span>Dropped Module:</span>
+                        <span className="font-medium">
+                          {results.droppedModule.name} (
+                          {results.droppedModule.mark}%)
+                        </span>
+                      </div>
+                    )}
                   </div>
                 </div>
               ) : (
                 <div className="text-center text-gray-500 py-8">
                   <Calculator className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                  <p>Enter marks to see live classification results</p>
+                  <p>
+                    Select <strong>two optionals per level</strong> and enter
+                    marks for every module to see your classification.
+                  </p>
                 </div>
               )}
             </CardContent>
@@ -517,6 +616,7 @@ export default function CSCalculatorPage() {
         </div>
       </div>
 
+      {/* -------- Calculation Method -------- */}
       <div className="mt-12 max-w-4xl mx-auto">
         <Card>
           <CardHeader>
@@ -530,27 +630,36 @@ export default function CSCalculatorPage() {
                 Final Grade Formula:
               </p>
               <p className="text-blue-800 font-mono text-lg">
-                Final = (1/3 × L5 Average) + (2/3 × L6 Average)
+                Final = (⅓ × L5 Average) + (⅔ × L6 Average)
               </p>
             </div>
             <ul className="space-y-2 text-base">
               <li className="flex items-center gap-3">
                 <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></span>
-                The lowest-scoring optional module is excluded.
+                The single lowest-scoring <strong>20-credit</strong> module
+                across both levels may be dropped <em>unless</em> it is SDGP or
+                FYP.
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></span>
-                FYP and SDGP are mandatory.
+                SDGP (L5) and FYP (L6) are mandatory and <strong>cannot</strong>{" "}
+                be dropped.
               </li>
               <li className="flex items-center gap-3">
                 <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
-                Exactly two optional modules must be selected per level.
+                You must choose <strong>exactly two</strong> optional modules at
+                each level.
+              </li>
+              <li className="flex items-center gap-3">
+                <span className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></span>
+                If a drop occurs, total credits fall from 240 → 220.
               </li>
             </ul>
           </CardContent>
         </Card>
       </div>
 
+      {/* -------- Disclaimer -------- */}
       <div className="mt-8 bg-amber-50 border border-amber-200 rounded-md p-4 text-amber-800 text-sm text-center">
         <p>
           <strong>Disclaimer:</strong> This tool is not officially affiliated
