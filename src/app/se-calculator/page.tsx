@@ -7,7 +7,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Checkbox } from "@/components/ui/checkbox"
-import { ArrowLeft, Code, Calculator, User } from "lucide-react"
+import { ArrowLeft, Code, Calculator, User, Info } from "lucide-react"
 
 // SE Module Data with new structure
 const seModules = {
@@ -175,19 +175,6 @@ export default function SECalculatorPage() {
     if (average >= 50) return { class: "Second Lower", color: "text-orange-700", bg: "bg-orange-50" }
     if (average >= 40) return { class: "Pass", color: "text-purple-700", bg: "bg-purple-50" }
     return { class: "Fail", color: "text-red-700", bg: "bg-red-50" }
-  }
-
-  const canSubmit = () => {
-    return (
-      studentInfo.name.trim() !== "" &&
-      studentInfo.studentId.trim() !== "" &&
-      Object.keys(l5CoreMarks).length === seModules.l5.core.length &&
-      l5SelectedOptional.size >= 1 &&
-      Array.from(l5SelectedOptional).every((moduleId) => l5OptionalMarks[moduleId] !== undefined) &&
-      Object.keys(l6CoreMarks).length === seModules.l6.core.length &&
-      l6SelectedOptional.size >= 1 &&
-      Array.from(l6SelectedOptional).every((moduleId) => l6OptionalMarks[moduleId] !== undefined)
-    )
   }
 
   const renderModuleSection = (
@@ -385,34 +372,43 @@ export default function SECalculatorPage() {
                         <span>{results.totalCredits}</span>
                       </div>
                     </div>
-
-                    {canSubmit() && (
-                      <Link
-                        href={`/results?average=${results.finalAverage}&l5Average=${results.l5Average}&l6Average=${results.l6Average}&credits=${results.totalCredits}&type=se&name=${encodeURIComponent(studentInfo.name)}&studentId=${encodeURIComponent(studentInfo.studentId)}`}
-                      >
-                        <Button className="w-full bg-purple-600 hover:bg-purple-700">Submit & View Results</Button>
-                      </Link>
-                    )}
                   </>
                 ) : (
                   <div className="text-center text-gray-500 py-8">
                     <Calculator className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                    <p>Enter student info and marks to see classification</p>
+                    <p>Enter marks to see live classification results</p>
                   </div>
                 )}
               </CardContent>
             </Card>
 
-            {/* Calculation Info */}
+            {/* Calculation Method */}
             <Card>
               <CardHeader>
-                <CardTitle className="text-base">Calculation Method</CardTitle>
+                <CardTitle className="flex items-center gap-2 text-base">
+                  <Info className="h-5 w-5" />
+                  Calculation Method
+                </CardTitle>
               </CardHeader>
-              <CardContent className="text-sm space-y-2">
-                <p>• Final = (1/3 × L5) + (2/3 × L6)</p>
-                <p>• Lowest optional module excluded</p>
-                <p>• FYP and SDGP are mandatory</p>
-                <p>• Choose exactly 1 optional per level</p>
+              <CardContent className="text-sm space-y-3">
+                <div className="bg-purple-50 p-3 rounded-md">
+                  <p className="font-medium text-purple-900 mb-2">Final Grade Formula:</p>
+                  <p className="text-purple-800">Final = (1/3 × L5) + (2/3 × L6)</p>
+                </div>
+                <div className="space-y-2">
+                  <p className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
+                    Lowest optional module excluded
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
+                    FYP and SDGP are mandatory
+                  </p>
+                  <p className="flex items-center gap-2">
+                    <span className="w-2 h-2 bg-purple-500 rounded-full"></span>
+                    Choose exactly 1 optional per level
+                  </p>
+                </div>
               </CardContent>
             </Card>
           </div>
