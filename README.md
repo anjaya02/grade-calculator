@@ -59,14 +59,32 @@ Open [http://localhost:3000](http://localhost:3000) in your browser.
 ## 📁 Project Structure
 
 ```
-src/
-├── app/
-│   ├── cs-calculator/
-│   ├── se-calculator/
-│   └── results/
-├── components/
-├── lib/
-├── styles/
+my-grade-app/
+├── public/
+├── src/
+│   ├── app/
+│   │   ├── cs-calculator/
+│   │   │   └── page.tsx
+│   │   ├── se-calculator/
+│   │   │   └── page.tsx
+│   │   ├── favicon.ico
+│   │   ├── globals.css
+│   │   ├── layout.tsx
+│   │   └── page.tsx
+│   ├── components/
+│   │   └── ui/
+│   │       ├── checkbox.tsx
+│   │       └── label.tsx
+│   └── lib/
+├── .gitignore
+├── components.json
+├── eslint.config.mjs
+├── next-env.d.ts
+├── next.config.ts
+├── package.json
+├── postcss.config.mjs
+└── tailwind.config.ts
+
 ```
 
 ---
