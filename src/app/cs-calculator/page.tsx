@@ -110,6 +110,14 @@ export default function CSCalculatorPage() {
     }
   }
 
+  const getClassification = (average: number) => {
+    if (average >= 70) return { class: "First Class", color: "text-green-800", bg: "bg-green-100" }
+    if (average >= 60) return { class: "Second Upper", color: "text-blue-800", bg: "bg-blue-100" }
+    if (average >= 50) return { class: "Second Lower", color: "text-orange-800", bg: "bg-orange-100" }
+    if (average >= 40) return { class: "Pass", color: "text-purple-800", bg: "bg-purple-100" }
+    return { class: "Fail", color: "text-red-800", bg: "bg-red-100" }
+  }
+
   const calculateResults = () => {
     // Calculate L5 average (excluding lowest optional if more than 2 selected)
     const l5CoreCredits = csModules.l5.core.reduce((sum, module) => sum + module.credits, 0)
@@ -187,14 +195,6 @@ export default function CSCalculatorPage() {
   }
 
   const results = calculateResults()
-
-  const getClassification = (average: number) => {
-    if (average >= 70) return { class: "First Class", color: "text-yellow-700", bg: "bg-yellow-50" }
-    if (average >= 60) return { class: "Second Upper", color: "text-green-700", bg: "bg-green-50" }
-    if (average >= 50) return { class: "Second Lower", color: "text-orange-700", bg: "bg-orange-50" }
-    if (average >= 40) return { class: "Pass", color: "text-purple-700", bg: "bg-purple-50" }
-    return { class: "Fail", color: "text-red-700", bg: "bg-red-50" }
-  }
 
   const renderModuleSection = (
     title: string,
@@ -359,17 +359,19 @@ export default function CSCalculatorPage() {
               </CardHeader>
               <CardContent className="space-y-4">
                 {results.finalAverage > 0 ? (
-                  <>
+                  <div
+                    className={`p-4 rounded-lg ${getClassification(results.finalAverage).bg} border-2 ${getClassification(results.finalAverage).bg.replace("bg-", "border-")}`}
+                  >
                     <div className="text-center">
                       <div className="text-3xl font-bold text-gray-900 mb-1">{results.finalAverage.toFixed(1)}%</div>
                       <div
-                        className={`text-sm font-medium px-3 py-1 rounded-full ${getClassification(results.finalAverage).bg} ${getClassification(results.finalAverage).color}`}
+                        className={`text-lg font-bold px-4 py-2 rounded-full ${getClassification(results.finalAverage).color}`}
                       >
                         {getClassification(results.finalAverage).class}
                       </div>
                     </div>
 
-                    <div className="space-y-2 text-sm">
+                    <div className="space-y-2 text-sm mt-4">
                       <div className="flex justify-between">
                         <span>L5 Average:</span>
                         <span className="font-medium">{results.l5Average.toFixed(1)}%</span>
@@ -391,7 +393,7 @@ export default function CSCalculatorPage() {
                         <span>{results.totalCredits}</span>
                       </div>
                     </div>
-                  </>
+                  </div>
                 ) : (
                   <div className="text-center text-gray-500 py-8">
                     <Calculator className="h-12 w-12 mx-auto mb-4 opacity-50" />
@@ -400,37 +402,39 @@ export default function CSCalculatorPage() {
                 )}
               </CardContent>
             </Card>
-
-            {/* Calculation Method */}
-            <Card>
-              <CardHeader>
-                <CardTitle className="flex items-center gap-2 text-base">
-                  <Info className="h-5 w-5" />
-                  Calculation Method
-                </CardTitle>
-              </CardHeader>
-              <CardContent className="text-sm space-y-3">
-                <div className="bg-blue-50 p-3 rounded-md">
-                  <p className="font-medium text-blue-900 mb-2">Final Grade Formula:</p>
-                  <p className="text-blue-800">Final = (1/3 × L5) + (2/3 × L6)</p>
-                </div>
-                <div className="space-y-2">
-                  <p className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-green-500 rounded-full"></span>
-                    Lowest optional module excluded
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-red-500 rounded-full"></span>
-                    FYP and SDGP are mandatory
-                  </p>
-                  <p className="flex items-center gap-2">
-                    <span className="w-2 h-2 bg-blue-500 rounded-full"></span>
-                    Choose exactly 2 optional per level
-                  </p>
-                </div>
-              </CardContent>
-            </Card>
           </div>
+        </div>
+
+        {/* Calculation Method */}
+        <div className="mt-12 max-w-4xl mx-auto">
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-xl">
+                <Info className="h-6 w-6" />
+                Calculation Method
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="bg-blue-50 p-4 rounded-md">
+                <p className="font-bold text-blue-900 mb-2 text-lg">Final Grade Formula:</p>
+                <p className="text-blue-800 font-mono text-lg">Final = (1/3 × L5 Average) + (2/3 × L6 Average)</p>
+              </div>
+              <ul className="space-y-2 text-base">
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></span>
+                  The lowest-scoring optional module is excluded.
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></span>
+                  FYP and SDGP are mandatory.
+                </li>
+                <li className="flex items-center gap-3">
+                  <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
+                  Exactly two optional modules must be selected per level.
+                </li>
+              </ul>
+            </CardContent>
+          </Card>
         </div>
 
         {/* Disclaimer */}
