@@ -456,6 +456,18 @@ export default function CSCalculatorPage() {
                                 e.target.value
                               )
                             }
+                            /* ▼ NEW: block the hidden spinner shortcuts */
+                            onKeyDown={(e) => {
+                              if (
+                                e.key === "ArrowUp" ||
+                                e.key === "ArrowDown"
+                              ) {
+                                e.preventDefault(); // stops 79 -> 78, 58 -> 57, etc.
+                              }
+                            }}
+                            onWheel={(e) => e.currentTarget.blur()} // stops track-pad scrolling changing the value
+                            /* ▲ NEW */
+
                             className="mt-1"
                           />
                         </div>

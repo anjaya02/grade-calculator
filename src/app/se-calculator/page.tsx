@@ -431,6 +431,18 @@ export default function SECalculatorPage() {
                                 e.target.value
                               )
                             }
+                            /* ▼ NEW: stop the hidden spinner shortcuts that cause 79 → 78, etc. */
+                            onKeyDown={(e) => {
+                              if (
+                                e.key === "ArrowUp" ||
+                                e.key === "ArrowDown"
+                              ) {
+                                e.preventDefault(); // blocks ±1 auto-step from num-pad arrows
+                              }
+                            }}
+                            onWheel={(e) => e.currentTarget.blur()} // blocks mouse-wheel grade changes
+                            /* ▲ NEW */
+
                             className="mt-1"
                           />
                         </div>
