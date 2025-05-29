@@ -638,30 +638,29 @@ export default function SECalculatorPage() {
               <p className="font-bold text-blue-900 mb-2 text-lg">
                 Final Grade Formula:
               </p>
-              <p className="text-blue-800 font-mono text-lg">
-                Final&nbsp;=
-                (⅓&nbsp;×&nbsp;L5&nbsp;Average)&nbsp;+&nbsp;(⅔&nbsp;×&nbsp;L6&nbsp;Average)
+              <p className="text-blue-800 font-mono text-lg break-words">
+                Final = (⅓ × L5 Average) + (⅔ × L6 Average)
               </p>
             </div>
 
-            <ul className="space-y-2 text-base">
-              <li className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></span>
+            <ul className="space-y-2 text-base leading-relaxed break-words">
+              <li className="flex items-start gap-3">
+                <span className="w-2 h-2 mt-2 bg-green-500 rounded-full flex-shrink-0" />
                 The single lowest-scoring <strong>20-credit</strong> module
                 across both levels may be dropped <em>unless</em> it is SDGP or
                 FYP.
               </li>
-              <li className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-red-500 rounded-full flex-shrink-0"></span>
+              <li className="flex items-start gap-3">
+                <span className="w-2 h-2 mt-2 bg-red-500 rounded-full flex-shrink-0" />
                 SDGP and FYP are mandatory and <strong>cannot</strong> be
                 dropped.
               </li>
-              <li className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-blue-500 rounded-full flex-shrink-0"></span>
+              <li className="flex items-start gap-3">
+                <span className="w-2 h-2 mt-2 bg-blue-500 rounded-full flex-shrink-0" />
                 One optional module per level is required.
               </li>
-              <li className="flex items-center gap-3">
-                <span className="w-2 h-2 bg-purple-500 rounded-full flex-shrink-0"></span>
+              <li className="flex items-start gap-3">
+                <span className="w-2 h-2 mt-2 bg-purple-500 rounded-full flex-shrink-0" />
                 If a drop occurs, total credits become 220 (100 from one level
                 and 120 from the other).
               </li>
