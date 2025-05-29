@@ -431,7 +431,7 @@ export default function SECalculatorPage() {
                                 e.target.value
                               )
                             }
-                            /* ▼ NEW: stop the hidden spinner shortcuts that cause 79 → 78, etc. */
+                            /* stop the hidden spinner shortcuts that cause 79 → 78, etc. */
                             onKeyDown={(e) => {
                               if (
                                 e.key === "ArrowUp" ||
