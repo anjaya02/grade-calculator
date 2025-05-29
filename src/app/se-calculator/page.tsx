@@ -246,8 +246,8 @@ export default function SECalculatorPage() {
       type: "core" | "optional";
     }[] = [];
 
-    list.push(...attach(seModules.l5.core, "l5", "core"));
-    list.push(...attach(seModules.l6.core, "l6", "core"));
+    list.push(...attach([...seModules.l5.core], "l5", "core"));
+    list.push(...attach([...seModules.l6.core], "l6", "core"));
 
     l5SelectedOptional.forEach((id) => {
       const mod = seModules.l5.optional.find((m) => m.id === id);
@@ -339,10 +339,16 @@ export default function SECalculatorPage() {
   /* ------------------------------------------------------------------ */
   /*                         RENDER HELPERS                             */
   /* ------------------------------------------------------------------ */
+  type Module = {
+    id: string;
+    name: string;
+    credits: number;
+    mandatory?: boolean;
+  };
 
   const renderModuleSection = (
     title: string,
-    modules: typeof seModules.l5.core,
+    modules: readonly Module[], // ✅ accepts core *or* optional
     level: "l5" | "l6",
     type: "core" | "optional"
   ) => {

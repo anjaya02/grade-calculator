@@ -274,8 +274,8 @@ export default function CSCalculatorPage() {
       type: "core" | "optional";
     }[] = [];
 
-    list.push(...attach(csModules.l5.core, "l5", "core"));
-    list.push(...attach(csModules.l6.core, "l6", "core"));
+    list.push(...attach([...csModules.l5.core], "l5", "core"));
+    list.push(...attach([...csModules.l6.core], "l6", "core"));
 
     l5SelectedOptional.forEach((id) => {
       const mod = csModules.l5.optional.find((m) => m.id === id);
@@ -368,9 +368,16 @@ export default function CSCalculatorPage() {
   /* ------------------------------------------------------------------ */
   /*                       RENDER HELPERS                               */
   /* ------------------------------------------------------------------ */
+  type Module = {
+    id: string;
+    name: string;
+    credits: number;
+    mandatory?: boolean;
+  };
+
   const renderModuleSection = (
     title: string,
-    modules: typeof csModules.l5.core,
+    modules: readonly Module[], // 👈 accept readonly
     level: "l5" | "l6",
     type: "core" | "optional"
   ) => {
