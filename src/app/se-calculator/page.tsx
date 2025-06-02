@@ -386,13 +386,17 @@ export default function SECalculatorPage() {
             return (
               <Card
                 key={mod.id}
-                className={`transition-all ${
-                  isSelected
-                    ? isCore
-                      ? "border-purple-200 bg-purple-50/30"
-                      : "ring-2 ring-purple-500"
-                    : ""
-                }`}
+                className={`transition-all
+    ${
+      isSelected
+        ? isCore
+          ? "border-purple-200 bg-purple-50/30"
+          : "ring-2 ring-purple-500"
+        : ""
+    }
+
+    ${disableCheck ? "opacity-50" : ""}          
+  `}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">

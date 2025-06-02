@@ -414,13 +414,17 @@ export default function CSCalculatorPage() {
             return (
               <Card
                 key={mod.id}
-                className={`transition-all ${
-                  isSelected
-                    ? isCore
-                      ? "border-blue-200 bg-blue-50/30"
-                      : "ring-2 ring-green-500"
-                    : ""
-                }`}
+                className={`transition-all
+    ${
+      isSelected
+        ? isCore
+          ? "border-blue-200 bg-blue-50/30"
+          : "ring-2 ring-green-500"
+        : ""
+    }
+
+    ${disableCheck ? "opacity-50" : ""}     
+  `}
               >
                 <CardContent className="p-4">
                   <div className="flex items-start gap-4">
