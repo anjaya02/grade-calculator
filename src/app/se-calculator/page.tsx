@@ -452,7 +452,7 @@ export default function SECalculatorPage() {
 
   const renderModuleSection = (
     title: string,
-    modules: readonly Module[], // ✅ accepts core *or* optional
+    modules: readonly Module[], // accepts core or optional
     level: "l5" | "l6",
     type: "core" | "optional",
   ) => {
@@ -588,7 +588,7 @@ export default function SECalculatorPage() {
                               }
                             }}
                             onWheel={(e) => e.currentTarget.blur()} // blocks mouse-wheel grade changes
-                            /* ▲ NEW */
+                            /* new */
 
                             className="mt-1"
                           />

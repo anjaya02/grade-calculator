@@ -481,7 +481,7 @@ export default function CSCalculatorPage() {
 
   const renderModuleSection = (
     title: string,
-    modules: readonly Module[], // 👈 accept readonly
+    modules: readonly Module[], // accepts readonly
     level: "l5" | "l6",
     type: "core" | "optional",
   ) => {
