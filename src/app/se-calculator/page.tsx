@@ -713,8 +713,8 @@ export default function SECalculatorPage() {
       {/* ---------------------------------------------------------------- */}
       {/* Body */}
       {/* ---------------------------------------------------------------- */}
-      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 grid lg:grid-cols-3 gap-8">
-        <div className="lg:col-span-2 space-y-8">
+      <div className="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
+        <div className="grid gap-8 lg:grid-cols-2 lg:items-start">
           {/* Level 5 */}
           <section className="space-y-6">
             <h2 className="text-2xl font-extrabold text-gray-900 tracking-tight mb-2">
@@ -753,20 +753,22 @@ export default function SECalculatorPage() {
             )}
           </section>
         </div>
+      </div>
 
-        {/* ---------------------------------------------------------------- */}
-        {/* Results */}
-        {/* ---------------------------------------------------------------- */}
-        <div className="space-y-6">
-          <Card className="sticky top-28 border border-indigo-50/50 shadow-2xl shadow-indigo-100/40 bg-white/60 backdrop-blur-xl">
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calculator className="h-5 w-5" />
-                Classification Results
-              </CardTitle>
-            </CardHeader>
+      {/* ---------------------------------------------------------------- */}
+      {/* Results */}
+      {/* ---------------------------------------------------------------- */}
+      <div className="relative z-10 max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <Card className="border border-indigo-50/50 shadow-2xl shadow-indigo-100/40 bg-white/60 backdrop-blur-xl">
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calculator className="h-5 w-5" />
+              Classification Results
+            </CardTitle>
+          </CardHeader>
 
-            <CardContent className="space-y-4">
+          <CardContent className="space-y-4">
+            <div>
               {showResults && results ? (
                 <div
                   className={`p-4 rounded-lg ${
@@ -825,7 +827,7 @@ export default function SECalculatorPage() {
                   </div>
                 </div>
               ) : (
-                <div className="text-center text-gray-500 py-8">
+                <div className="text-center text-gray-500 min-h-[220px] flex flex-col items-center justify-center">
                   <Calculator className="h-12 w-12 mx-auto mb-4 opacity-50" />
                   <p>
                     Select one optional per level <em>and</em> enter marks for
@@ -833,21 +835,21 @@ export default function SECalculatorPage() {
                   </p>
                 </div>
               )}
+            </div>
 
-              {/* Other Module Note */}
-              {hasOtherModulesSelected() && (
-                <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md flex items-start gap-2 text-sm">
-                  <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
-                  <p className="text-amber-800">
-                    <strong>📝 Note:</strong> You&apos;ve added an other
-                    optional module. Ensure it&apos;s a valid replacement
-                    approved by your department.
-                  </p>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+            {/* Other Module Note */}
+            {hasOtherModulesSelected() && (
+              <div className="mt-4 p-3 bg-amber-50 border border-amber-200 rounded-md flex items-start gap-2 text-sm">
+                <AlertCircle className="h-4 w-4 text-amber-600 mt-0.5 flex-shrink-0" />
+                <p className="text-amber-800">
+                  <strong>📝 Note:</strong> You&apos;ve added an other optional
+                  module. Ensure it&apos;s a valid replacement approved by your
+                  department.
+                </p>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
 
       {/* ---------------------------------------------------------------- */}
