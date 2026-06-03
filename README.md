@@ -10,8 +10,8 @@ Built with **Next.js**, **TypeScript**, **Tailwind CSS**, and **shadcn/ui** for 
 
 - 🎯 Calculate degree classification (First Class, Second Upper, etc.)
 - 📊 Weighted calculation using Level 5 and Level 6 module results
-- 🔄 Automatically excludes the lowest optional module
-- 📌 FYP and SDGP are mandatory and cannot be dropped
+- 🔄 Uses the best 220 credits across Levels 5 and 6
+- 📌 Correctly handles 40-credit modules and cross-level ties
 - 📎 SE & CS pathways supported
 - 📱 Mobile-responsive UI
 - 🌈 Clean, colorful UI with intuitive design
@@ -22,14 +22,16 @@ Built with **Next.js**, **TypeScript**, **Tailwind CSS**, and **shadcn/ui** for 
 
 ```
 
-Final Grade = (1/3 × Level 5 Average) + (2/3 × Level 6 Average)
+Indicator Score = (1/3 × Level 5 Average) + (2/3 × Level 6 Average)
 
 ````
 
 - Only Level 5 and Level 6 credits are used
-- Optional module with the lowest mark is excluded
-- Exactly 2 optional modules per level should be selected
-- FYP and SDGP are mandatory
+- The lowest-mark module is disregarded from the best 220 credits
+- A module worth more than 20 credits has only 20 credits disregarded
+- A tied lowest mark across both levels is resolved by disregarding the Level 6 module
+- The indicator score is rounded to the nearest integer before classification
+- Disregarding credits does not award credit for a failed module; award requirements must still be met
 
 ---
 

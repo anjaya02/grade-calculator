@@ -236,7 +236,7 @@ export default function HomePage() {
                 shadow: "shadow-orange-200/50",
               },
               {
-                title: "Pass",
+                title: "Third Class",
                 range: "40-49%",
                 emoji: "🎖️",
                 gradient: "from-purple-400 to-fuchsia-500",
@@ -244,8 +244,8 @@ export default function HomePage() {
                 shadow: "shadow-purple-200/50",
               },
               {
-                title: "Fail",
-                range: "<40%",
+                title: "No Classification",
+                range: "Award not met",
                 emoji: "❌",
                 gradient: "from-rose-400 to-red-500",
                 text: "text-rose-700",

@@ -17,6 +17,7 @@ import {
   AlertCircle,
 } from "lucide-react";
 import Footer from "@/components/Footer";
+import { calculateHonoursClassification } from "@/lib/degree-classification";
 
 /* ------------------------------------------------------------------ */
 /*                        MODULE   DATA                               */
@@ -149,9 +150,6 @@ const csModules = {
 /* ------------------------------------------------------------------ */
 /*                      CONSTANTS & HELPERS                           */
 /* ------------------------------------------------------------------ */
-
-const SDGP_ID = "5COSC021C";
-const FYP_ID = "6COSC023C";
 
 type OtherModule = {
   id: string;
@@ -393,58 +391,25 @@ export default function CSCalculatorPage() {
   };
 
   /* ------------------------------------------------------------------ */
-  /*                 MAIN CALCULATION (drop-lowest rule)                */
+  /*                    MAIN CLASSIFICATION CALCULATION                  */
   /* ------------------------------------------------------------------ */
   const calculateResults = () => {
     if (!allMarksEntered()) return null;
 
-    const modules = buildModuleList();
-
-    // Find lowest eligible 20-credit module (exclude SDGP & FYP)
-    const dropCandidates = modules.filter(
-      (m) => m.credits === 20 && m.id !== SDGP_ID && m.id !== FYP_ID,
-    );
-    const dropped =
-      dropCandidates.length > 0
-        ? dropCandidates.reduce((low, cur) => (cur.mark < low.mark ? cur : low))
-        : null;
-
-    const kept = dropped ? modules.filter((m) => m.id !== dropped.id) : modules;
-
-    // Aggregate by level
-    const sumCredits = (arr: typeof kept) =>
-      arr.reduce((s, m) => s + m.credits, 0);
-    const sumWeighted = (arr: typeof kept) =>
-      arr.reduce((s, m) => s + m.credits * m.mark, 0);
-
-    const l5Mods = kept.filter((m) => m.level === "l5");
-    const l6Mods = kept.filter((m) => m.level === "l6");
-
-    const l5Credits = sumCredits(l5Mods);
-    const l6Credits = sumCredits(l6Mods);
-    const l5Weighted = sumWeighted(l5Mods);
-    const l6Weighted = sumWeighted(l6Mods);
-
-    const l5Average = l5Weighted / l5Credits;
-    const l6Average = l6Weighted / l6Credits;
-    const finalAverage = l5Average / 3 + (2 * l6Average) / 3;
-
-    return {
-      l5Average,
-      l6Average,
-      finalAverage,
-      l5Credits,
-      l6Credits,
-      totalCredits: l5Credits + l6Credits,
-      droppedModule: dropped,
-    };
+    return calculateHonoursClassification(buildModuleList());
   };
 
   const results = calculateResults();
   const showResults = results !== null;
 
   /* ---------- classification band ---------- */
-  const classify = (avg: number) => {
+  const classify = (avg: number, hasModulesBelowPassMark = false) => {
+    if (hasModulesBelowPassMark)
+      return {
+        label: "No Honours Classification",
+        bg: "bg-red-100",
+        color: "text-red-800",
+      };
     if (avg >= 70)
       return {
         label: "First Class",
@@ -464,8 +429,16 @@ export default function CSCalculatorPage() {
         color: "text-orange-800",
       };
     if (avg >= 40)
-      return { label: "Pass", bg: "bg-purple-100", color: "text-purple-800" };
-    return { label: "Fail", bg: "bg-red-100", color: "text-red-800" };
+      return {
+        label: "Third Class",
+        bg: "bg-purple-100",
+        color: "text-purple-800",
+      };
+    return {
+      label: "No Honours Classification",
+      bg: "bg-red-100",
+      color: "text-red-800",
+    };
   };
 
   /* ------------------------------------------------------------------ */
@@ -789,27 +762,46 @@ export default function CSCalculatorPage() {
               {showResults && results ? (
                 <div
                   className={`p-4 rounded-lg ${
-                    classify(results.finalAverage).bg
+                    classify(
+                      results.roundedIndicatorScore,
+                      results.modulesBelowPassMark.length > 0,
+                    ).bg
                   } border-2`}
                 >
                   <div className="text-center">
                     <div className="text-5xl font-black text-gray-900 mb-3 tracking-tight tabular-nums font-[family-name:var(--font-geist-mono)] drop-shadow-sm">
-                      {results.finalAverage.toFixed(1)}%
+                      {results.roundedIndicatorScore}%
                     </div>
                     <div
                       className={`text-lg font-bold px-4 py-2 rounded-full ${
-                        classify(results.finalAverage).color
+                        classify(
+                          results.roundedIndicatorScore,
+                          results.modulesBelowPassMark.length > 0,
+                        ).color
                       }`}
                     >
-                      {classify(results.finalAverage).label}
+                      {
+                        classify(
+                          results.roundedIndicatorScore,
+                          results.modulesBelowPassMark.length > 0,
+                        ).label
+                      }
                     </div>
                   </div>
 
                   <div className="space-y-2 text-sm mt-4">
                     <div className="flex justify-between">
+                      <span>Unrounded Indicator Score:</span>
+                      <span className="font-medium">
+                        {results.indicatorScore.toFixed(2)}%
+                      </span>
+                    </div>
+                    <div className="flex justify-between">
                       <span>L5 Average:</span>
                       <span className="font-medium">
-                        {results.l5Average.toFixed(1)}%
+                        {results.l5Average !== null
+                          ? `${results.l5Average.toFixed(1)}%`
+                          : "Not used"}
                       </span>
                     </div>
                     <div className="flex justify-between">
@@ -830,17 +822,32 @@ export default function CSCalculatorPage() {
                       <span>Total Credits:</span>
                       <span>{results.totalCredits}</span>
                     </div>
-                    {results.droppedModule && (
+                    {results.disregardedModule && (
                       <div className="flex justify-between">
-                        <span>Dropped Module:</span>
-                        <span className="font-medium">
-                          {results.droppedModule.name} (
-                          {results.droppedModule.mark}
-                          %)
+                        <span>Disregarded Credits:</span>
+                        <span className="font-medium text-right">
+                          {results.disregardedModule.name} (
+                          {results.disregardedModule.mark}%,{" "}
+                          {results.disregardedCredits} credits)
                         </span>
                       </div>
                     )}
                   </div>
+
+                  {results.modulesBelowPassMark.length > 0 && (
+                    <div className="mt-4 p-3 bg-red-50 border border-red-200 rounded-md flex items-start gap-2 text-sm">
+                      <AlertCircle className="h-4 w-4 text-red-600 mt-0.5 flex-shrink-0" />
+                      <p className="text-red-800">
+                        <strong>No Honours classification can be assigned:</strong>{" "}
+                        The following module marks are below the Level 5/6 pass
+                        mark of 40%:{" "}
+                        {results.modulesBelowPassMark
+                          .map((module) => module.name)
+                          .join(", ")}
+                        . Disregarding credits affects the indicator score only.
+                      </p>
+                    </div>
+                  )}
                 </div>
               ) : (
                 <div className="text-center text-gray-500 min-h-[220px] flex flex-col items-center justify-center">
@@ -879,26 +886,25 @@ export default function CSCalculatorPage() {
           <CardContent className="space-y-4 sm:space-y-5">
             <div className="bg-blue-50 p-4 rounded-md sm:p-5">
               <p className="font-bold text-blue-900 mb-2 text-base sm:text-lg">
-                Final Grade Formula:
+                Indicator Score Formula:
               </p>
               <p className="text-blue-800 font-mono text-base sm:text-lg leading-relaxed break-words">
-                Final = (⅓ × L5 Average) + (⅔ × L6 Average)
+                Indicator = (⅓ × L5 Average) + (⅔ × L6 Average)
               </p>
             </div>
             <ul className="space-y-2.5 text-sm sm:text-base leading-relaxed">
               <li className="flex items-start gap-3">
                 <span className="w-2 h-2 mt-2 bg-green-500 rounded-full flex-shrink-0"></span>
                 <span>
-                  The single lowest-scoring <strong>20-credit</strong> module
-                  across both levels may be dropped <em>unless</em> it is SDGP
-                  or FYP.
+                  The lowest-mark module across Levels 5 and 6 is disregarded
+                  from the best 220 credits.
                 </span>
               </li>
               <li className="flex items-start gap-3">
                 <span className="w-2 h-2 mt-2 bg-red-500 rounded-full flex-shrink-0"></span>
                 <span>
-                  SDGP (L5) and FYP (L6) are mandatory and{" "}
-                  <strong>cannot</strong> be dropped.
+                  If the lowest module is worth more than 20 credits, only 20
+                  credits are disregarded. Its remaining credits still count.
                 </span>
               </li>
               <li className="flex items-start gap-3">
@@ -911,7 +917,23 @@ export default function CSCalculatorPage() {
               <li className="flex items-start gap-3">
                 <span className="w-2 h-2 mt-2 bg-purple-500 rounded-full flex-shrink-0"></span>
                 <span>
-                  If a drop occurs, total credits fall from 240 → 220.
+                  A tie between Level 5 and Level 6 lowest marks is resolved by
+                  disregarding the Level 6 module.
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-2 h-2 mt-2 bg-amber-500 rounded-full flex-shrink-0"></span>
+                <span>
+                  The indicator score is rounded to the nearest integer before
+                  the degree classification is assigned.
+                </span>
+              </li>
+              <li className="flex items-start gap-3">
+                <span className="w-2 h-2 mt-2 bg-red-500 rounded-full flex-shrink-0"></span>
+                <span>
+                  Disregarding credits does not turn a failed module into a
+                  pass. Every Level 5 and Level 6 module must still receive
+                  credit before an Honours classification can be assigned.
                 </span>
               </li>
             </ul>
@@ -933,7 +955,8 @@ export default function CSCalculatorPage() {
                 <strong>Disclaimer:</strong> This tool is not officially
                 affiliated with IIT. Results shown are approximate and for
                 guidance purposes only. Please consult your academic advisor for
-                final grades.
+                final grades. Qualifying assessment components and other
+                course-specific award requirements are not verified.
               </p>
             </div>
           </div>
