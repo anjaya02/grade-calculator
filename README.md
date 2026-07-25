@@ -74,10 +74,21 @@ my-grade-app/
 │   │   ├── layout.tsx
 │   │   └── page.tsx
 │   ├── components/
-│   │   └── ui/
-│   │       ├── checkbox.tsx
-│   │       └── label.tsx
+│   │   ├── ui/
+│   │   └── Footer.tsx
+│   ├── features/
+│   │   └── grade-calculator/
+│   │       ├── components/
+│   │       ├── data/
+│   │       │   ├── computer-science.ts
+│   │       │   └── software-engineering.ts
+│   │       ├── hooks/
+│   │       │   └── use-grade-calculator.ts
+│   │       ├── classification.ts
+│   │       ├── theme.ts
+│   │       └── types.ts
 │   └── lib/
+│       └── degree-classification.ts
 ├── .gitignore
 ├── components.json
 ├── eslint.config.mjs
