@@ -18,7 +18,7 @@ export function CalculationMethod({
     <details className="group border-y border-border">
       <summary className="flex cursor-pointer items-center justify-between gap-4 py-5 outline-offset-4">
         <span>
-          <span className="block font-display text-2xl font-bold uppercase leading-tight tracking-[-0.02em]">
+          <span className="block text-balance font-display text-2xl font-bold uppercase leading-tight tracking-[-0.02em]">
             How your result is calculated
           </span>
           <span className="mt-1 block text-xs text-muted-foreground">
@@ -49,7 +49,7 @@ export function CalculationMethod({
             >
               <span
                 aria-hidden="true"
-                className="pt-0.5 font-mono text-[10px] text-primary"
+                className="shrink-0 pt-0.5 font-mono text-[10px] text-primary"
               >
                 0{index + 1}
               </span>

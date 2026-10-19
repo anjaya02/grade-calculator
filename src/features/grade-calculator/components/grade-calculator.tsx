@@ -24,7 +24,7 @@ export function GradeCalculator({ config }: GradeCalculatorProps) {
           <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.13em] text-muted-foreground">
             {config.id} / Degree classification worksheet
           </p>
-          <h1 className="font-display text-[2.5rem] font-bold uppercase leading-[1.05] tracking-[-0.025em] sm:text-[3.5rem]">
+          <h1 className="text-balance font-display text-[clamp(2rem,8vw,3.5rem)] font-bold uppercase leading-[1.05] tracking-[-0.025em] [overflow-wrap:anywhere]">
             {config.name}
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
@@ -39,7 +39,7 @@ export function GradeCalculator({ config }: GradeCalculatorProps) {
             <LevelSection config={config} controller={controller} level="l6" />
           </div>
           <aside
-            className="min-w-0 lg:sticky lg:top-24"
+            className="min-w-0 lg:top-24 lg:[@media(min-height:50rem)]:sticky"
             aria-label="Your classification summary"
           >
             <ResultsCard controller={controller} config={config} />

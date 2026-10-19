@@ -40,14 +40,14 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
       className="scroll-mt-24 overflow-hidden rounded-lg border border-[#c7d3c3] bg-white"
     >
       <div className="bg-[#234333] px-6 pb-7 pt-6 text-white">
-        <div className="mb-7 flex items-center justify-between gap-2">
+        <div className="mb-7 flex flex-wrap items-center justify-between gap-x-3 gap-y-3">
           <h2
             id="results-heading"
             className="text-[10px] font-medium uppercase tracking-[0.13em] text-[#d0dfd0]"
           >
             Classification results
           </h2>
-          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-2 py-1 text-[9px] text-[#e1eadd]">
+          <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/20 px-2 py-1 text-[9px] text-[#e1eadd]">
             {results ? (
               hasFailedModules ? (
                 <AlertCircle className="size-3" aria-hidden="true" />
@@ -81,7 +81,7 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
             </span>
           </output>
           <p
-            className={`mt-3 font-display text-[1.625rem] font-bold uppercase leading-[1.1] tracking-[-0.01em] ${hasFailedModules ? "text-[#f1d4b1]" : ""}`}
+            className={`mt-3 text-balance font-display text-[1.625rem] font-bold uppercase leading-[1.1] tracking-[-0.01em] ${hasFailedModules ? "text-[#f1d4b1]" : ""}`}
           >
             {classification?.label ?? "Your result starts here."}
           </p>
@@ -132,7 +132,7 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
               <summary className="flex cursor-pointer items-center justify-between gap-3 rounded-sm text-xs font-medium outline-offset-4">
                 Calculation breakdown
                 <ChevronDown
-                  className="size-3.5 transition-transform group-open:rotate-180"
+                  className="size-3.5 shrink-0 transition-transform group-open:rotate-180"
                   aria-hidden="true"
                 />
               </summary>
@@ -149,7 +149,7 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
                   <p className="font-medium">
                     {results.disregardedCredits} credits disregarded
                   </p>
-                  <p className="mt-1 text-muted-foreground">
+                  <p className="mt-1 text-muted-foreground [overflow-wrap:anywhere]">
                     {results.disregardedModule.name} ·{" "}
                     {results.disregardedModule.mark}%
                   </p>
@@ -190,7 +190,7 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
               className="mt-0.5 size-3.5 shrink-0"
               aria-hidden="true"
             />
-            <p>
+            <p className="min-w-0 [overflow-wrap:anywhere]">
               <strong className="font-semibold">
                 Pass requirements not met.
               </strong>{" "}
@@ -229,9 +229,11 @@ function ResultRow({
   value: string | number;
 }) {
   return (
-    <div className="flex items-baseline justify-between gap-4 text-[11px]">
+    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-[11px]">
       <dt className="text-muted-foreground">{label}</dt>
-      <dd className="font-medium tabular-nums">{value}</dd>
+      <dd className="shrink-0 whitespace-nowrap font-medium tabular-nums">
+        {value}
+      </dd>
     </div>
   );
 }

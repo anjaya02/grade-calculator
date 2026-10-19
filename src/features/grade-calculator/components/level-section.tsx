@@ -12,14 +12,14 @@ export function LevelSection({ config, controller, level }: LevelSectionProps) {
   const levelNumber = level === "l5" ? 5 : 6;
   return (
     <section aria-labelledby={`heading-${level}`} className="min-w-0 space-y-5">
-      <div className="flex items-center justify-between gap-3 pb-1">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 pb-1">
         <h2
           id={`heading-${level}`}
-          className="font-display text-[1.75rem] font-bold uppercase leading-tight tracking-[-0.02em]"
+          className="font-display text-2xl font-bold uppercase leading-tight tracking-[-0.02em] sm:text-[1.75rem]"
         >
           Level {levelNumber} modules
         </h2>
-        <span className="text-[10px] text-muted-foreground">
+        <span className="shrink-0 whitespace-nowrap text-[10px] text-muted-foreground">
           {level === "l5" ? "⅓" : "⅔"} weighting
         </span>
       </div>

@@ -47,7 +47,7 @@ export function AddModuleForm({
         }}
         className="mt-2 h-11 bg-white text-base shadow-none md:text-sm"
       />
-      <div className="mt-3 flex gap-2">
+      <div className="mt-3 flex flex-wrap gap-2">
         <Button
           size="sm"
           onClick={onAdd}

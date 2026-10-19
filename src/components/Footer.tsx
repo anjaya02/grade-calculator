@@ -16,11 +16,11 @@ export default function Footer() {
           <div className="sm:text-right">
             <p className="text-xs text-muted-foreground">
               Designed & built by{" "}
-              <span className="font-medium text-foreground">
+              <span className="whitespace-nowrap font-medium text-foreground">
                 Anjaya Induwara
               </span>
             </p>
-            <div className="mt-3 flex items-center gap-5 text-xs text-muted-foreground sm:justify-end">
+            <div className="mt-3 flex flex-wrap items-center gap-5 text-xs text-muted-foreground sm:justify-end">
               <a
                 href="mailto:anjaya.20234069@iit.ac.lk"
                 className="inline-flex items-center gap-1 transition-colors hover:text-primary"

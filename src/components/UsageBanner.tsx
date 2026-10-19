@@ -72,16 +72,14 @@ export function UsageBanner() {
           Counting since <time dateTime="2026-10-19">19 October 2026</time>
         </p>
       </div>
-      <dl className="grid grid-cols-3 divide-x divide-[#d5ddcf]">
+      <dl className="grid gap-4 md:grid-cols-3 md:gap-0 md:divide-x md:divide-[#d5ddcf]">
         {metrics.map(({ label, value }, index) => (
           <div
             key={label}
-            className={index === 0 ? "pr-3 sm:pr-6" : "px-3 sm:px-6"}
+            className={`flex min-w-0 flex-wrap items-baseline justify-between gap-x-4 gap-y-1 border-b border-[#d5ddcf] pb-4 last:border-b-0 last:pb-0 md:block md:border-b-0 md:pb-0 ${index === 0 ? "md:pr-6" : "md:pl-6 md:not-last:pr-6"}`}
           >
-            <dt className="text-[10px] leading-4 text-muted-foreground sm:text-xs">
-              {label}
-            </dt>
-            <dd className="mt-2 font-display text-3xl font-bold tabular-nums tracking-[-0.03em] text-primary sm:text-4xl">
+            <dt className="text-xs leading-5 text-muted-foreground">{label}</dt>
+            <dd className="max-w-full font-display text-2xl font-bold tabular-nums tracking-[-0.03em] text-primary [overflow-wrap:anywhere] sm:text-3xl md:mt-2 md:text-4xl">
               {value === undefined
                 ? loading
                   ? "…"

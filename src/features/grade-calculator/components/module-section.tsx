@@ -31,7 +31,7 @@ export function ModuleSection({
       className="overflow-hidden rounded-lg border border-border bg-white"
       aria-labelledby={`heading-${level} ${level}-${moduleType}-heading`}
     >
-      <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-4">
+      <div className="flex flex-wrap items-center justify-between gap-x-2 gap-y-1 border-b border-border px-4 py-4">
         <h3
           id={`${level}-${moduleType}-heading`}
           className="text-[13px] font-semibold"
@@ -40,7 +40,7 @@ export function ModuleSection({
         </h3>
         <span
           aria-live={isCore ? undefined : "polite"}
-          className={`text-[10px] ${!isCore && selectedCount === config.optionalModulesPerLevel ? "text-primary" : "text-muted-foreground"}`}
+          className={`shrink-0 whitespace-nowrap text-[10px] ${!isCore && selectedCount === config.optionalModulesPerLevel ? "text-primary" : "text-muted-foreground"}`}
         >
           {isCore
             ? "All required"

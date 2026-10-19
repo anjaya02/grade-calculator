@@ -55,7 +55,7 @@ export function ModuleCard({
       <div className="min-w-0 flex-1">
         <h4
           id={titleId}
-          className="break-words text-[12px] font-medium leading-[1.45] sm:text-[13px]"
+          className="text-[12px] font-medium leading-[1.45] [overflow-wrap:anywhere] sm:text-[13px]"
         >
           {isCore ? (
             module.name
@@ -71,7 +71,7 @@ export function ModuleCard({
         <p className="mt-1 flex flex-wrap items-center gap-x-1.5 font-mono text-[9px] leading-4 tracking-[-0.015em] text-muted-foreground">
           <span>{isOtherModule ? "CUSTOM" : module.id}</span>
           <span aria-hidden="true">·</span>
-          <span>{module.credits} credits</span>
+          <span className="whitespace-nowrap">{module.credits} credits</span>
           {isOtherModule && (
             <Button
               variant="ghost"
@@ -86,7 +86,7 @@ export function ModuleCard({
         </p>
       </div>
       {(isCore || selected) && (
-        <div className="relative w-[68px] shrink-0">
+        <div className="relative w-[5.5rem] shrink-0">
           <Label htmlFor={inputId} className="sr-only">
             {module.name} mark (%)
           </Label>

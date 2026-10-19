@@ -51,7 +51,7 @@ export default function HomePage() {
   return (
     <div className="flex min-h-screen flex-col">
       <header className="border-b border-border">
-        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
+        <div className="mx-auto flex min-h-20 max-w-6xl flex-wrap items-center justify-between gap-x-4 gap-y-3 px-5 py-4 sm:px-8">
           <SiteBrand />
           <nav aria-label="Main navigation" className="flex items-center gap-6">
             <a
@@ -62,7 +62,7 @@ export default function HomePage() {
             </a>
             <a
               href="#calculators"
-              className="inline-flex items-center gap-2 rounded-sm text-sm font-medium text-primary outline-offset-4"
+              className="inline-flex shrink-0 items-center gap-2 whitespace-nowrap rounded-sm text-sm font-medium text-primary outline-offset-4"
             >
               Get started <ArrowRight className="size-4" aria-hidden="true" />
             </a>
@@ -75,7 +75,7 @@ export default function HomePage() {
           className="page-enter grid items-center gap-12 pb-16 pt-14 sm:pb-20 sm:pt-20 lg:grid-cols-[1fr_290px] lg:gap-20 lg:pt-24"
           aria-labelledby="hero-heading"
         >
-          <div>
+          <div className="@container min-w-0">
             <p className="mb-6 flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
               <span
                 className="size-1.5 rounded-full bg-primary"
@@ -85,7 +85,7 @@ export default function HomePage() {
             </p>
             <h1
               id="hero-heading"
-              className="max-w-3xl font-display text-[clamp(2.75rem,7.5vw,5.75rem)] font-extrabold uppercase leading-[0.98] tracking-[-0.035em]"
+              className="font-display text-[min(clamp(2rem,13cqi,5.75rem),clamp(2.75rem,7.5vw,5.75rem))] font-extrabold uppercase leading-[0.98] tracking-[-0.035em]"
             >
               A clearer view
               <br /> of your <span className="text-primary">degree.</span>
@@ -107,7 +107,7 @@ export default function HomePage() {
               </Button>
               <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
                 <ShieldCheck
-                  className="size-4 text-primary"
+                  className="size-4 shrink-0 text-primary"
                   aria-hidden="true"
                 />{" "}
                 Your marks stay on your device
@@ -174,7 +174,7 @@ export default function HomePage() {
               ({ id, name, icon: Icon, description, optionals, link }) => (
                 <article
                   key={id}
-                  className="group flex flex-col rounded-lg border border-border bg-white p-6 transition-colors duration-200 hover:border-primary sm:p-8"
+                  className="group flex min-w-0 flex-col rounded-lg border border-border bg-white p-6 transition-colors duration-200 hover:border-primary sm:p-8 md:row-span-5 md:grid md:grid-rows-subgrid md:gap-0"
                 >
                   <div className="mb-8 flex items-center justify-between">
                     <span className="flex size-10 items-center justify-center rounded-lg border border-border bg-background text-primary">
@@ -188,21 +188,23 @@ export default function HomePage() {
                       {id}
                     </span>
                   </div>
-                  <h3 className="font-display text-[1.75rem] font-bold uppercase leading-[1.05] tracking-[-0.02em] sm:text-[2rem]">
+                  <h3 className="text-balance font-display text-[1.75rem] font-bold uppercase leading-[1.05] tracking-[-0.02em] sm:text-[2rem]">
                     {name}
                   </h3>
                   <p className="mb-6 mt-3 max-w-sm flex-1 text-sm leading-6 text-muted-foreground">
                     {description}
                   </p>
                   <div className="mb-7 flex flex-wrap gap-x-4 gap-y-2 text-[11px] font-medium text-muted-foreground">
-                    <span>Levels 5 & 6</span>
-                    <span aria-hidden="true">/</span>
-                    <span>{optionals}</span>
+                    <span className="whitespace-nowrap">Levels 5 & 6</span>
+                    <span className="inline-flex items-center gap-4 whitespace-nowrap">
+                      <span aria-hidden="true">/</span>
+                      {optionals}
+                    </span>
                   </div>
                   <Button
                     asChild
                     variant="outline"
-                    className="h-12 w-full justify-between rounded-lg border-border bg-white px-4 text-primary shadow-none transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-white"
+                    className="h-auto min-h-12 w-full justify-between whitespace-normal rounded-lg border-border bg-white px-4 py-3 text-left text-primary shadow-none transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-white"
                   >
                     <Link href={link}>
                       Calculate {id.toUpperCase()} Degree{" "}
@@ -228,7 +230,7 @@ export default function HomePage() {
             </p>
             <h2
               id="method-heading"
-              className="font-display text-[2.5rem] font-bold uppercase leading-[1.05] tracking-[-0.025em]"
+              className="font-display text-[clamp(2rem,7.5vw,2.5rem)] font-bold uppercase leading-[1.05] tracking-[-0.025em]"
             >
               Every mark has
               <br /> its place.
@@ -245,11 +247,11 @@ export default function HomePage() {
             </p>
           </div>
           <div>
-            <div className="mb-2 flex items-baseline justify-between gap-4 pb-4">
+            <div className="mb-2 flex flex-wrap items-baseline justify-between gap-x-4 gap-y-2 pb-4">
               <h3 className="text-sm font-medium">
                 Honours classification guide
               </h3>
-              <span className="text-[11px] text-muted-foreground">
+              <span className="whitespace-nowrap text-[11px] text-muted-foreground">
                 Rounded indicator
               </span>
             </div>
@@ -265,7 +267,7 @@ export default function HomePage() {
                       {detail}
                     </span>
                   </dt>
-                  <dd className="font-display text-[1.75rem] font-bold leading-none tracking-tight text-primary">
+                  <dd className="shrink-0 whitespace-nowrap font-display text-[1.75rem] font-bold leading-none tracking-tight text-primary">
                     {range}
                   </dd>
                 </div>
