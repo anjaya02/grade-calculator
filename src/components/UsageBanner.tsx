@@ -66,12 +66,15 @@ export function UsageBanner() {
       aria-busy={loading}
       className="mx-auto mb-24 max-w-4xl rounded-3xl border border-indigo-100 bg-white/70 p-6 shadow-xl shadow-indigo-100/30 backdrop-blur-xl sm:p-8"
     >
-      <div className="mb-6 flex items-center justify-center gap-2 text-gray-900">
+      <div className="mb-2 flex items-center justify-center gap-2 text-gray-900">
         <BarChart3 className="h-5 w-5 text-indigo-500" aria-hidden="true" />
         <h3 id="usage-heading" className="text-xl font-bold">
           Calculations so far
         </h3>
       </div>
+      <p className="mb-6 text-center text-sm text-gray-500">
+        Counting since <time dateTime="2026-10-19">19 October 2026</time>
+      </p>
       <dl className="grid grid-cols-2 gap-6 text-center sm:grid-cols-3">
         {metrics.map(({ label, value, color }, index) => (
           <div
