@@ -1,6 +1,7 @@
 "use client";
 
 import Footer from "@/components/Footer";
+import { useCalculationUsage } from "../hooks/use-calculation-usage";
 import { useGradeCalculator } from "../hooks/use-grade-calculator";
 import { calculatorThemes } from "../theme";
 import type { CourseConfig } from "../types";
@@ -16,6 +17,7 @@ type GradeCalculatorProps = {
 
 export function GradeCalculator({ config }: GradeCalculatorProps) {
   const controller = useGradeCalculator(config);
+  useCalculationUsage(config.id, controller.results !== null);
   const theme = calculatorThemes[config.theme];
 
   return (

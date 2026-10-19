@@ -31,6 +31,10 @@ export function ResultsCard({
         </CardTitle>
       </CardHeader>
       <CardContent className="space-y-4">
+        <p className="text-xs text-gray-500">
+          Completed calculator visits contribute to the public usage count. Your
+          marks stay in your browser.
+        </p>
         {results ? (
           <ResultDetails results={results} />
         ) : (

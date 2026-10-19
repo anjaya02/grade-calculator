@@ -18,6 +18,51 @@ Built with **Next.js**, **TypeScript**, **Tailwind CSS**, and **shadcn/ui** for 
 
 ---
 
+## Public usage counts
+
+The home-page banner shows CS, SE, and combined completed-calculation totals.
+One use is recorded the first time a complete set of marks produces results
+during a calculator visit. Editing marks or making the form incomplete and
+complete again does not add another count during that visit. Opening a
+calculator without completing it does not count. Returning for a new visit can
+add another count: these are usage totals, not unique-student counts.
+
+The counter only sends the course (`cs` or `se`) and a random event ID. It does
+not send marks, module choices, names, emails, or student IDs. Redis stores two
+totals and temporary event IDs that expire after 24 hours, allowing retries to
+be deduplicated. The counter itself does not store IP addresses; normal hosting
+and storage-provider logs are separate.
+
+### Enable counts on Vercel
+
+1. Create an [Upstash Redis database](https://upstash.com/docs/redis/overall/getstarted),
+   either directly or through the Vercel Marketplace, and connect it to this
+   Vercel project.
+2. In the project's environment variables, set `UPSTASH_REDIS_REST_URL` and
+   `UPSTASH_REDIS_REST_TOKEN` from the database's REST connection details. The
+   integration's `KV_REST_API_URL` and `KV_REST_API_TOKEN` names also work. Keep
+   these variables server-only; do not use a `NEXT_PUBLIC_` prefix.
+3. Redeploy. The counters start at zero and persist across deployments. Earlier
+   usage cannot be recovered from this counter.
+
+For local development, copy `.env.example` to `.env.local`, fill in the two
+credentials, and restart the development server. The default counter namespace
+separates `production`, `preview`, and `development`; set
+`USAGE_COUNTER_NAMESPACE` only if you intentionally want to share totals or
+start a fresh set. Keep the same database and production namespace to retain
+live totals. Configure the database so the permanent totals are not evicted.
+
+Reads and increments go through `/api/usage`; Redis credentials never reach the
+browser. Concurrent increments and duplicate event IDs are handled atomically
+using the [Upstash Redis REST API](https://upstash.com/docs/redis/features/restapi).
+If storage is unconfigured or unavailable, the banner displays an unavailable
+message and calculators continue working. Failed writes are retried once with
+the same event ID; activity during a prolonged outage may not be counted.
+Same-origin checks and duplicate suppression prevent accidental inflation, but
+this public, anonymous counter is not a verified or abuse-proof audit metric.
+
+---
+
 ## 📘 Calculation Method
 
 ```

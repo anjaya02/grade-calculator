@@ -1,3 +1,5 @@
+import type { UsageCourse } from "@/lib/usage";
+
 export type LevelId = "l5" | "l6";
 
 export type ModuleType = "core" | "optional";
@@ -19,6 +21,7 @@ export type LevelModules = {
 };
 
 export type CourseConfig = {
+  id: UsageCourse;
   name: string;
   icon: "book" | "code";
   theme: "indigo" | "purple";

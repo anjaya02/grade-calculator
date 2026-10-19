@@ -12,6 +12,7 @@ import {
 import { GraduationCap, BookOpen, Code, TerminalSquare } from "lucide-react";
 import { CheckCircle } from "lucide-react";
 import Footer from "@/components/Footer";
+import { UsageBanner } from "@/components/UsageBanner";
 import { motion, Variants } from "framer-motion";
 
 const containerVariants: Variants = {
@@ -103,7 +104,7 @@ export default function HomePage() {
           variants={containerVariants}
           initial="hidden"
           animate="visible"
-          className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-24"
+          className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-10"
         >
           {/* Computer Science Option */}
           <motion.div
@@ -191,6 +192,8 @@ export default function HomePage() {
             </Card>
           </motion.div>
         </motion.div>
+
+        <UsageBanner />
 
         {/* Classification Categories - Sleek Look */}
         <motion.div

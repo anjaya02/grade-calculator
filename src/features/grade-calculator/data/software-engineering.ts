@@ -1,6 +1,7 @@
 import type { CourseConfig } from "../types";
 
 export const softwareEngineeringConfig = {
+  id: "se",
   name: "Software Engineering",
   icon: "code",
   theme: "purple",

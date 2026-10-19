@@ -1,6 +1,7 @@
 import type { CourseConfig } from "../types";
 
 export const computerScienceConfig = {
+  id: "cs",
   name: "Computer Science",
   icon: "book",
   theme: "indigo",

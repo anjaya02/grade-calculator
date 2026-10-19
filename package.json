@@ -6,7 +6,8 @@
     "dev": "next dev --turbopack",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint ."
+    "lint": "eslint .",
+    "test": "tsx --test tests/usage.test.ts"
   },
   "dependencies": {
     "@radix-ui/react-checkbox": "^1.3.2",
@@ -30,6 +31,7 @@
     "eslint": "^9",
     "eslint-config-next": "15.3.2",
     "tailwindcss": "^4",
+    "tsx": "^4.23.15",
     "tw-animate-css": "^1.3.0",
     "typescript": "^5"
   }
