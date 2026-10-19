@@ -62,7 +62,7 @@ export function UsageBanner() {
     <section
       aria-labelledby="usage-heading"
       aria-busy={loading}
-      className="my-10 rounded-xl border border-border bg-[#eef1e8] px-6 py-7 sm:my-14 sm:px-8"
+      className="my-10 border-y border-border bg-[#eef1e8] px-6 py-7 sm:my-14 sm:px-8"
     >
       <div className="mb-7 flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2">
         <h2 id="usage-heading" className="text-sm font-medium">
@@ -81,7 +81,7 @@ export function UsageBanner() {
             <dt className="text-[10px] leading-4 text-muted-foreground sm:text-xs">
               {label}
             </dt>
-            <dd className="mt-2 text-3xl font-medium tabular-nums tracking-[-0.045em] text-primary sm:text-4xl">
+            <dd className="mt-2 font-display text-3xl font-bold tabular-nums tracking-[-0.03em] text-primary sm:text-4xl">
               {value === undefined
                 ? loading
                   ? "…"

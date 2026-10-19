@@ -37,7 +37,7 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
     <section
       id="classification-results"
       aria-labelledby="results-heading"
-      className="scroll-mt-24 overflow-hidden rounded-xl border border-[#d1dace] bg-white shadow-[0_8px_30px_-20px_#25352d40]"
+      className="scroll-mt-24 overflow-hidden rounded-lg border border-[#c7d3c3] bg-white"
     >
       <div className="bg-[#234333] px-6 pb-7 pt-6 text-white">
         <div className="mb-7 flex items-center justify-between gap-2">
@@ -73,15 +73,15 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
           </p>
           <output
             aria-label="Rounded indicator score"
-            className="flex items-baseline gap-1 text-[5.5rem] font-medium leading-[1.15] tabular-nums tracking-[-0.075em]"
+            className="font-score flex items-baseline gap-1 text-[6.5rem] font-extrabold leading-none tabular-nums tracking-[-0.055em]"
           >
             {results ? results.roundedIndicatorScore : "—"}
-            <span className="ml-1 text-[1.75rem] font-normal tracking-[-0.03em] text-[#bdceba]">
+            <span className="ml-1 font-sans text-[1.75rem] font-normal tracking-[-0.03em] text-[#bdceba]">
               %
             </span>
           </output>
           <p
-            className={`mt-2 font-display text-[1.8rem] leading-tight tracking-[-0.015em] ${hasFailedModules ? "text-[#f1d4b1]" : ""}`}
+            className={`mt-3 font-display text-[1.625rem] font-bold uppercase leading-[1.1] tracking-[-0.01em] ${hasFailedModules ? "text-[#f1d4b1]" : ""}`}
           >
             {classification?.label ?? "Your result starts here."}
           </p>

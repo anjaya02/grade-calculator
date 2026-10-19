@@ -15,7 +15,7 @@ export function LevelSection({ config, controller, level }: LevelSectionProps) {
       <div className="flex items-center justify-between gap-3 pb-1">
         <h2
           id={`heading-${level}`}
-          className="font-display text-[1.75rem] tracking-[-0.025em]"
+          className="font-display text-[1.75rem] font-bold uppercase leading-tight tracking-[-0.02em]"
         >
           Level {levelNumber} modules
         </h2>

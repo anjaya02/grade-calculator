@@ -85,11 +85,10 @@ export default function HomePage() {
             </p>
             <h1
               id="hero-heading"
-              className="max-w-3xl font-display text-[3.25rem] font-normal leading-[1.06] tracking-[-0.045em] sm:text-[4.75rem]"
+              className="max-w-3xl font-display text-[clamp(2.75rem,7.5vw,5.75rem)] font-extrabold uppercase leading-[0.98] tracking-[-0.035em]"
             >
-              A clearer view of
-              <br className="hidden sm:block" /> your{" "}
-              <span className="italic text-primary">degree.</span>
+              A clearer view
+              <br /> of your <span className="text-primary">degree.</span>
             </h1>
             <p className="mt-6 max-w-lg text-[15px] leading-7 text-muted-foreground sm:text-base">
               Turn your Level 5 and 6 marks into an estimated degree
@@ -116,12 +115,8 @@ export default function HomePage() {
             </div>
           </div>
 
-          <div className="relative hidden lg:block">
-            <div
-              aria-hidden="true"
-              className="absolute -inset-2 translate-x-2 translate-y-2 rounded-xl border border-border bg-[#eeefe6]"
-            />
-            <div className="relative rounded-xl border border-border bg-[#fffefa] p-6">
+          <div className="hidden border-l border-border pl-8 lg:block">
+            <div>
               <div className="mb-9 flex items-center justify-between border-b border-border pb-4">
                 <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
                   The weighting
@@ -137,10 +132,10 @@ export default function HomePage() {
                 className="flex items-end gap-2"
                 aria-label="Level 5 contributes one third; Level 6 contributes two thirds"
               >
-                <div className="flex h-20 flex-1 items-end rounded-t-sm bg-[#dbe5d4] p-3 font-display text-3xl text-primary">
+                <div className="flex h-20 flex-1 items-end bg-[#dbe5d4] p-3 text-3xl font-medium text-primary">
                   ⅓
                 </div>
-                <div className="flex h-36 flex-[2] items-end rounded-t-sm bg-primary p-3 font-display text-4xl text-white">
+                <div className="flex h-40 flex-[2] items-end bg-primary p-3 text-4xl font-medium text-white">
                   ⅔
                 </div>
               </div>
@@ -152,7 +147,7 @@ export default function HomePage() {
                 <span className="text-xs text-muted-foreground">
                   Best credits considered
                 </span>
-                <span className="font-display text-2xl">220</span>
+                <span className="font-display text-3xl font-bold">220</span>
               </div>
             </div>
           </div>
@@ -179,7 +174,7 @@ export default function HomePage() {
               ({ id, name, icon: Icon, description, optionals, link }) => (
                 <article
                   key={id}
-                  className="group flex flex-col rounded-xl border border-border bg-white p-6 transition-[border-color,box-shadow] duration-200 hover:border-[#a3b79b] hover:shadow-[0_4px_24px_-12px_#25352d26] sm:p-8"
+                  className="group flex flex-col rounded-lg border border-border bg-white p-6 transition-colors duration-200 hover:border-primary sm:p-8"
                 >
                   <div className="mb-8 flex items-center justify-between">
                     <span className="flex size-10 items-center justify-center rounded-lg border border-border bg-background text-primary">
@@ -193,7 +188,7 @@ export default function HomePage() {
                       {id}
                     </span>
                   </div>
-                  <h3 className="font-display text-[2rem] leading-tight tracking-[-0.025em]">
+                  <h3 className="font-display text-[1.75rem] font-bold uppercase leading-[1.05] tracking-[-0.02em] sm:text-[2rem]">
                     {name}
                   </h3>
                   <p className="mb-6 mt-3 max-w-sm flex-1 text-sm leading-6 text-muted-foreground">
@@ -233,7 +228,7 @@ export default function HomePage() {
             </p>
             <h2
               id="method-heading"
-              className="font-display text-4xl leading-tight tracking-[-0.025em]"
+              className="font-display text-[2.5rem] font-bold uppercase leading-[1.05] tracking-[-0.025em]"
             >
               Every mark has
               <br /> its place.
@@ -270,7 +265,7 @@ export default function HomePage() {
                       {detail}
                     </span>
                   </dt>
-                  <dd className="font-display text-[1.75rem] leading-none tracking-tight text-primary">
+                  <dd className="font-display text-[1.75rem] font-bold leading-none tracking-tight text-primary">
                     {range}
                   </dd>
                 </div>

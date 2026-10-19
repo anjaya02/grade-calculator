@@ -9,9 +9,9 @@ export function SiteBrand() {
     >
       <span
         aria-hidden="true"
-        className="flex size-8 items-center justify-center rounded-lg bg-primary font-display text-[25px] leading-none text-white sm:size-9 sm:text-[27px]"
+        className="flex size-8 items-center justify-center rounded-md bg-primary font-display text-[22px] font-extrabold leading-none text-white sm:size-9 sm:text-[24px]"
       >
-        d<span className="text-[#c1d8ac]">.</span>
+        D<span className="text-[#c1d8ac]">.</span>
       </span>
       <span className="text-sm font-semibold tracking-[-0.035em] sm:text-[15px]">
         Degree Calculator<span className="text-primary">.</span>

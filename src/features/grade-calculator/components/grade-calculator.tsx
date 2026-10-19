@@ -24,7 +24,7 @@ export function GradeCalculator({ config }: GradeCalculatorProps) {
           <p className="mb-3 font-mono text-[10px] uppercase tracking-[0.13em] text-muted-foreground">
             {config.id} / Degree classification worksheet
           </p>
-          <h1 className="font-display text-[2.75rem] font-normal leading-tight tracking-[-0.035em] sm:text-5xl">
+          <h1 className="font-display text-[2.5rem] font-bold uppercase leading-[1.05] tracking-[-0.025em] sm:text-[3.5rem]">
             {config.name}
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
@@ -46,7 +46,7 @@ export function GradeCalculator({ config }: GradeCalculatorProps) {
           </aside>
         </div>
 
-        <div className="mt-12 border-t border-border pt-10">
+        <div className="mt-12">
           <CalculationMethod
             optionalModulesPerLevel={config.optionalModulesPerLevel}
           />

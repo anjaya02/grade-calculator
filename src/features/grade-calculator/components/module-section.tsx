@@ -28,7 +28,7 @@ export function ModuleSection({
 
   return (
     <section
-      className="overflow-hidden rounded-xl border border-border bg-white"
+      className="overflow-hidden rounded-lg border border-border bg-white"
       aria-labelledby={`heading-${level} ${level}-${moduleType}-heading`}
     >
       <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-4">

@@ -15,10 +15,10 @@ export function CalculationMethod({
     "Disregarding credits does not turn a failed module into a pass. Every Level 5 and 6 module must still receive credit before an Honours classification can be assigned.",
   ];
   return (
-    <details className="group rounded-xl border border-border bg-white">
-      <summary className="flex cursor-pointer items-center justify-between gap-4 rounded-xl px-5 py-5 outline-offset-4 sm:px-6">
+    <details className="group border-y border-border">
+      <summary className="flex cursor-pointer items-center justify-between gap-4 py-5 outline-offset-4">
         <span>
-          <span className="block font-display text-2xl tracking-[-0.02em]">
+          <span className="block font-display text-2xl font-bold uppercase leading-tight tracking-[-0.02em]">
             How your result is calculated
           </span>
           <span className="mt-1 block text-xs text-muted-foreground">
@@ -30,12 +30,12 @@ export function CalculationMethod({
           aria-hidden="true"
         />
       </summary>
-      <div className="grid gap-7 border-t border-border px-5 py-6 sm:px-6 lg:grid-cols-[280px_1fr] lg:gap-10">
+      <div className="grid gap-7 border-t border-border py-6 lg:grid-cols-[280px_1fr] lg:gap-10">
         <div className="self-start rounded-lg bg-[#eef1e8] p-5">
           <p className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
             The weighted indicator
           </p>
-          <p className="font-display text-2xl leading-relaxed text-primary">
+          <p className="text-xl font-medium leading-relaxed text-primary">
             ⅓ × Level 5 average
             <br />
             <span className="text-muted-foreground">+</span> ⅔ × Level 6 average

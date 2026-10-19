@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { DM_Sans, Newsreader, Geist_Mono } from "next/font/google";
+import { Archivo, DM_Sans, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
 const dmSans = DM_Sans({
@@ -8,10 +8,11 @@ const dmSans = DM_Sans({
   display: "swap",
 });
 
-const newsreader = Newsreader({
-  variable: "--font-newsreader",
+const archivo = Archivo({
+  variable: "--font-archivo",
   subsets: ["latin"],
-  style: ["normal", "italic"],
+  weight: "variable",
+  axes: ["wdth"],
   display: "swap",
 });
 
@@ -33,7 +34,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body
-        className={`${dmSans.variable} ${newsreader.variable} ${geistMono.variable} antialiased`}
+        className={`${dmSans.variable} ${archivo.variable} ${geistMono.variable} antialiased`}
       >
         {children}
       </body>
