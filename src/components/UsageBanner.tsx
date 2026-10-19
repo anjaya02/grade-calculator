@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { BarChart3 } from "lucide-react";
 import { isUsageCounts, type UsageCounts } from "@/lib/usage";
 
 const numberFormat = new Intl.NumberFormat("en-US");
@@ -51,12 +50,11 @@ export function UsageBanner() {
   }, []);
 
   const metrics = [
-    { label: "CS calculations", value: counts?.cs, color: "text-indigo-600" },
-    { label: "SE calculations", value: counts?.se, color: "text-sky-600" },
+    { label: "CS calculations", value: counts?.cs },
+    { label: "SE calculations", value: counts?.se },
     {
       label: "Total calculations",
       value: counts ? counts.cs + counts.se : undefined,
-      color: "text-purple-600",
     },
   ];
 
@@ -64,25 +62,26 @@ export function UsageBanner() {
     <section
       aria-labelledby="usage-heading"
       aria-busy={loading}
-      className="mx-auto mb-24 max-w-4xl rounded-3xl border border-indigo-100 bg-white/70 p-6 shadow-xl shadow-indigo-100/30 backdrop-blur-xl sm:p-8"
+      className="my-10 rounded-xl border border-border bg-[#eef1e8] px-6 py-7 sm:my-14 sm:px-8"
     >
-      <div className="mb-2 flex items-center justify-center gap-2 text-gray-900">
-        <BarChart3 className="h-5 w-5 text-indigo-500" aria-hidden="true" />
-        <h3 id="usage-heading" className="text-xl font-bold">
+      <div className="mb-7 flex flex-wrap items-baseline justify-between gap-x-5 gap-y-2">
+        <h2 id="usage-heading" className="text-sm font-medium">
           Calculations so far
-        </h3>
+        </h2>
+        <p className="text-[11px] text-muted-foreground">
+          Counting since <time dateTime="2026-10-19">19 October 2026</time>
+        </p>
       </div>
-      <p className="mb-6 text-center text-sm text-gray-500">
-        Counting since <time dateTime="2026-10-19">19 October 2026</time>
-      </p>
-      <dl className="grid grid-cols-2 gap-6 text-center sm:grid-cols-3">
-        {metrics.map(({ label, value, color }, index) => (
+      <dl className="grid grid-cols-3 divide-x divide-[#d5ddcf]">
+        {metrics.map(({ label, value }, index) => (
           <div
             key={label}
-            className={index === 2 ? "col-span-2 sm:col-span-1" : ""}
+            className={index === 0 ? "pr-3 sm:pr-6" : "px-3 sm:px-6"}
           >
-            <dt className="text-sm font-medium text-gray-500">{label}</dt>
-            <dd className={`mt-2 text-3xl font-extrabold tabular-nums ${color}`}>
+            <dt className="text-[10px] leading-4 text-muted-foreground sm:text-xs">
+              {label}
+            </dt>
+            <dd className="mt-2 text-3xl font-medium tabular-nums tracking-[-0.045em] text-primary sm:text-4xl">
               {value === undefined
                 ? loading
                   ? "…"
@@ -92,7 +91,10 @@ export function UsageBanner() {
           </div>
         ))}
       </dl>
-      <p role="status" className="mt-6 text-center text-xs text-gray-500">
+      <p
+        role="status"
+        className="mt-6 text-[11px] leading-5 text-muted-foreground"
+      >
         {unavailable
           ? counts
             ? "Showing the last available totals. Live totals are temporarily unavailable."

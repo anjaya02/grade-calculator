@@ -1,150 +1,237 @@
-import { AlertCircle, Calculator } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { AlertCircle, Check, ChevronDown, LockKeyhole } from "lucide-react";
 import {
   describeOptionalCount,
   getClassificationBand,
 } from "../classification";
 import type { GradeCalculatorController } from "../hooks/use-grade-calculator";
+import type { CourseConfig } from "../types";
 
 type ResultsCardProps = {
   controller: GradeCalculatorController;
-  optionalModulesPerLevel: number;
+  config: CourseConfig;
 };
 
-export function ResultsCard({
-  controller,
-  optionalModulesPerLevel,
-}: ResultsCardProps) {
+export function ResultsCard({ controller, config }: ResultsCardProps) {
   const { results, hasOtherModulesSelected } = controller;
+  const progress = (["l5", "l6"] as const).map((level) => {
+    const state = controller.levels[level];
+    const entered =
+      config.modules[level].core.filter(
+        (module) => state.coreMarks[module.id] !== undefined,
+      ).length +
+      [...state.selectedOptionals].filter(
+        (id) => state.optionalMarks[id] !== undefined,
+      ).length;
+    return {
+      level,
+      entered,
+      total: config.modules[level].core.length + config.optionalModulesPerLevel,
+    };
+  });
+  const hasFailedModules = Boolean(results?.modulesBelowPassMark.length);
+  const classification = results
+    ? getClassificationBand(results.roundedIndicatorScore, hasFailedModules)
+    : null;
 
   return (
-    <Card className="border border-indigo-50/50 bg-white/60 shadow-2xl shadow-indigo-100/40 backdrop-blur-xl">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Calculator className="h-5 w-5" />
-          Classification Results
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
-        <p className="text-xs text-gray-500">
-          Completed calculator visits contribute to the public usage count. Your
-          marks stay in your browser.
-        </p>
-        {results ? (
-          <ResultDetails results={results} />
-        ) : (
-          <div className="flex min-h-[220px] flex-col items-center justify-center text-center text-gray-500">
-            <Calculator className="mx-auto mb-4 h-12 w-12 opacity-50" />
-            <p>
-              Select {describeOptionalCount(optionalModulesPerLevel)} per level
-              and enter marks for every module to see your classification.
-            </p>
-          </div>
-        )}
-
-        {hasOtherModulesSelected && (
-          <div className="mt-4 flex items-start gap-2 rounded-md border border-amber-200 bg-amber-50 p-3 text-sm">
-            <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-amber-600" />
-            <p className="text-amber-800">
-              <strong>📝 Note:</strong> You&apos;ve added an other optional
-              module. Ensure it&apos;s a valid replacement approved by your
-              department.
-            </p>
-          </div>
-        )}
-      </CardContent>
-    </Card>
-  );
-}
-
-type ResultDetailsProps = {
-  results: NonNullable<GradeCalculatorController["results"]>;
-};
-
-function ResultDetails({ results }: ResultDetailsProps) {
-  const hasFailedModules = results.modulesBelowPassMark.length > 0;
-  const classification = getClassificationBand(
-    results.roundedIndicatorScore,
-    hasFailedModules,
-  );
-
-  return (
-    <div className={`rounded-lg border-2 p-4 ${classification.background}`}>
-      <div className="text-center">
-        <div className="mb-3 font-[family-name:var(--font-geist-mono)] text-5xl font-black tabular-nums tracking-tight text-gray-900 drop-shadow-sm">
-          {results.roundedIndicatorScore}%
+    <section
+      id="classification-results"
+      aria-labelledby="results-heading"
+      className="scroll-mt-24 overflow-hidden rounded-xl border border-[#d1dace] bg-white shadow-[0_8px_30px_-20px_#25352d40]"
+    >
+      <div className="bg-[#234333] px-6 pb-7 pt-6 text-white">
+        <div className="mb-7 flex items-center justify-between gap-2">
+          <h2
+            id="results-heading"
+            className="text-[10px] font-medium uppercase tracking-[0.13em] text-[#d0dfd0]"
+          >
+            Classification results
+          </h2>
+          <span className="inline-flex items-center gap-1.5 rounded-full border border-white/20 px-2 py-1 text-[9px] text-[#e1eadd]">
+            {results ? (
+              hasFailedModules ? (
+                <AlertCircle className="size-3" aria-hidden="true" />
+              ) : (
+                <Check className="size-3" aria-hidden="true" />
+              )
+            ) : (
+              <span
+                className="size-1 rounded-full bg-[#c6d8ba]"
+                aria-hidden="true"
+              />
+            )}
+            {results
+              ? hasFailedModules
+                ? "Check modules"
+                : "Calculated"
+              : "In progress"}
+          </span>
         </div>
-        <div
-          className={`rounded-full px-4 py-2 text-lg font-bold ${classification.color}`}
-        >
-          {classification.label}
-        </div>
-      </div>
-
-      <div className="mt-4 space-y-2 text-sm">
-        <ResultRow
-          label="Unrounded Indicator Score:"
-          value={`${results.indicatorScore.toFixed(2)}%`}
-        />
-        <ResultRow
-          label="L5 Average:"
-          value={
-            results.l5Average !== null
-              ? `${results.l5Average.toFixed(1)}%`
-              : "Not used"
-          }
-        />
-        <ResultRow
-          label="L6 Average:"
-          value={`${results.l6Average.toFixed(1)}%`}
-        />
-        <ResultRow label="L5 Credits:" value={results.l5Credits} />
-        <ResultRow label="L6 Credits:" value={results.l6Credits} />
-        <ResultRow label="Total Credits:" value={results.totalCredits} />
-        {results.disregardedModule && (
-          <ResultRow
-            label="Disregarded Credits:"
-            value={`${results.disregardedModule.name} (${results.disregardedModule.mark}%, ${results.disregardedCredits} credits)`}
-            alignRight
-          />
-        )}
-      </div>
-
-      {hasFailedModules && (
-        <div className="mt-4 flex items-start gap-2 rounded-md border border-red-200 bg-red-50 p-3 text-sm">
-          <AlertCircle className="mt-0.5 h-4 w-4 flex-shrink-0 text-red-600" />
-          <p className="text-red-800">
-            <strong>No Honours classification can be assigned:</strong> The
-            following module marks are below the Level 5/6 pass mark of 40%:{" "}
-            {results.modulesBelowPassMark
-              .map((module) => module.name)
-              .join(", ")}
-            . Disregarding credits affects the indicator score only.
+        <div aria-live="polite" aria-atomic="true">
+          <p className="mb-1 text-[11px] text-[#c4d4c4]">
+            Weighted indicator score
+          </p>
+          <output
+            aria-label="Rounded indicator score"
+            className="flex items-baseline gap-1 text-[5.5rem] font-medium leading-[1.15] tabular-nums tracking-[-0.075em]"
+          >
+            {results ? results.roundedIndicatorScore : "—"}
+            <span className="ml-1 text-[1.75rem] font-normal tracking-[-0.03em] text-[#bdceba]">
+              %
+            </span>
+          </output>
+          <p
+            className={`mt-2 font-display text-[1.8rem] leading-tight tracking-[-0.015em] ${hasFailedModules ? "text-[#f1d4b1]" : ""}`}
+          >
+            {classification?.label ?? "Your result starts here."}
+          </p>
+          <p className="mt-3 text-[11px] leading-5 text-[#c4d4c4]">
+            {results
+              ? `Rounded from an indicator of ${results.indicatorScore.toFixed(2)}%.`
+              : "A clear summary of your Level 5 and 6 marks."}
           </p>
         </div>
-      )}
-    </div>
+      </div>
+
+      <div className="p-6">
+        {results ? (
+          <>
+            <dl className="grid grid-cols-2 divide-x divide-border">
+              <div className="pr-4">
+                <dt className="text-[11px] text-muted-foreground">
+                  Level 5 average
+                </dt>
+                <dd className="mt-2 text-2xl font-medium tabular-nums tracking-[-0.04em]">
+                  {results.l5Average !== null
+                    ? `${results.l5Average.toFixed(1)}%`
+                    : "Not used"}
+                  <span className="mt-1 block text-[10px] font-normal tracking-normal text-muted-foreground">
+                    ⅓ of the indicator
+                  </span>
+                </dd>
+              </div>
+              <div className="pl-5">
+                <dt className="text-[11px] text-muted-foreground">
+                  Level 6 average
+                </dt>
+                <dd className="mt-2 text-2xl font-medium tabular-nums tracking-[-0.04em]">
+                  {results.l6Average.toFixed(1)}%
+                  <span className="mt-1 block text-[10px] font-normal tracking-normal text-muted-foreground">
+                    ⅔ of the indicator
+                  </span>
+                </dd>
+              </div>
+            </dl>
+            <dl className="mt-6 border-t border-border pt-4">
+              <ResultRow
+                label="Credits considered"
+                value={results.totalCredits}
+              />
+            </dl>
+            <details className="group mt-4 border-t border-border pt-4">
+              <summary className="flex cursor-pointer items-center justify-between gap-3 rounded-sm text-xs font-medium outline-offset-4">
+                Calculation breakdown
+                <ChevronDown
+                  className="size-3.5 transition-transform group-open:rotate-180"
+                  aria-hidden="true"
+                />
+              </summary>
+              <dl className="mt-4 space-y-3">
+                <ResultRow
+                  label="Unrounded indicator"
+                  value={`${results.indicatorScore.toFixed(2)}%`}
+                />
+                <ResultRow label="Level 5 credits" value={results.l5Credits} />
+                <ResultRow label="Level 6 credits" value={results.l6Credits} />
+              </dl>
+              {results.disregardedModule && (
+                <div className="mt-4 rounded-lg bg-background p-3 text-[11px] leading-5">
+                  <p className="font-medium">
+                    {results.disregardedCredits} credits disregarded
+                  </p>
+                  <p className="mt-1 text-muted-foreground">
+                    {results.disregardedModule.name} ·{" "}
+                    {results.disregardedModule.mark}%
+                  </p>
+                </div>
+              )}
+            </details>
+          </>
+        ) : (
+          <div>
+            <p className="text-xs leading-6 text-muted-foreground">
+              Select {describeOptionalCount(config.optionalModulesPerLevel)} per
+              level, then enter a mark for every module.
+            </p>
+            <div className="mt-5 space-y-4">
+              {progress.map(({ level, entered, total }) => (
+                <div key={level}>
+                  <div className="mb-2 flex justify-between text-[11px]">
+                    <span>Level {level === "l5" ? "5" : "6"}</span>
+                    <span className="tabular-nums text-muted-foreground">
+                      {entered} / {total} marks
+                    </span>
+                  </div>
+                  <progress
+                    aria-label={`Level ${level === "l5" ? "5" : "6"} marks entered`}
+                    value={entered}
+                    max={total}
+                    className="block h-1.5 w-full overflow-hidden rounded-full [&::-moz-progress-bar]:bg-primary [&::-webkit-progress-bar]:bg-muted [&::-webkit-progress-value]:bg-primary"
+                  />
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
+
+        {hasFailedModules && results && (
+          <div className="mt-5 flex items-start gap-2 rounded-lg border border-[#e9d3c5] bg-[#fcf5ee] p-3 text-[11px] leading-5 text-[#7b452e]">
+            <AlertCircle
+              className="mt-0.5 size-3.5 shrink-0"
+              aria-hidden="true"
+            />
+            <p>
+              <strong className="font-semibold">
+                Pass requirements not met.
+              </strong>{" "}
+              Marks below 40%:{" "}
+              {results.modulesBelowPassMark
+                .map((module) => module.name)
+                .join(", ")}
+              . Disregarding credits affects the indicator only; no Honours
+              classification can be assigned.
+            </p>
+          </div>
+        )}
+        {hasOtherModulesSelected && (
+          <p className="mt-4 rounded-lg border border-border bg-background p-3 text-[11px] leading-5 text-muted-foreground">
+            Your custom optional module must be an approved replacement. Confirm
+            this with your department.
+          </p>
+        )}
+        <div className="mt-5 flex items-start gap-2 border-t border-border pt-4 text-[10px] leading-5 text-muted-foreground">
+          <LockKeyhole className="mt-1 size-3 shrink-0" aria-hidden="true" />
+          <p>
+            Your marks stay in your browser. Completed visits contribute to the
+            public usage count.
+          </p>
+        </div>
+      </div>
+    </section>
   );
 }
 
-type ResultRowProps = {
+function ResultRow({
+  label,
+  value,
+}: {
   label: string;
   value: string | number;
-  alignRight?: boolean;
-};
-
-function ResultRow({ label, value, alignRight = false }: ResultRowProps) {
+}) {
   return (
-    <div className="flex justify-between gap-4">
-      <span>{label}</span>
-      <span className={`font-medium ${alignRight ? "text-right" : ""}`}>
-        {value}
-      </span>
+    <div className="flex items-baseline justify-between gap-4 text-[11px]">
+      <dt className="text-muted-foreground">{label}</dt>
+      <dd className="font-medium tabular-nums">{value}</dd>
     </div>
   );
 }

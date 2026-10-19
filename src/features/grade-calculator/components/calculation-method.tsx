@@ -1,102 +1,63 @@
-import { Info } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
+import { ChevronDown } from "lucide-react";
 import { describeOptionalCount } from "../classification";
 
-type CalculationMethodProps = {
-  optionalModulesPerLevel: number;
-};
-
-const rulesBeforeOptional = [
-  {
-    color: "bg-green-500",
-    content:
-      "The lowest-mark module across Levels 5 and 6 is disregarded from the best 220 credits.",
-  },
-  {
-    color: "bg-red-500",
-    content:
-      "If the lowest module is worth more than 20 credits, only 20 credits are disregarded. Its remaining credits still count.",
-  },
-] as const;
-
-const rulesAfterOptional = [
-  {
-    color: "bg-purple-500",
-    content:
-      "A tie between Level 5 and Level 6 lowest marks is resolved by disregarding the Level 6 module.",
-  },
-  {
-    color: "bg-amber-500",
-    content:
-      "The indicator score is rounded to the nearest integer before the degree classification is assigned.",
-  },
-  {
-    color: "bg-red-500",
-    content:
-      "Disregarding credits does not turn a failed module into a pass. Every Level 5 and Level 6 module must still receive credit before an Honours classification can be assigned.",
-  },
-] as const;
+type CalculationMethodProps = { optionalModulesPerLevel: number };
 
 export function CalculationMethod({
   optionalModulesPerLevel,
 }: CalculationMethodProps) {
+  const rules = [
+    "The lowest-mark module across Levels 5 and 6 is disregarded from the best 220 credits.",
+    "If the lowest module is worth more than 20 credits, only 20 credits are disregarded. Its remaining credits still count.",
+    `Choose exactly ${describeOptionalCount(optionalModulesPerLevel)} at each level.`,
+    "A tie between Level 5 and Level 6 lowest marks is resolved by disregarding the Level 6 module.",
+    "The indicator score is rounded to the nearest integer before classification is assigned.",
+    "Disregarding credits does not turn a failed module into a pass. Every Level 5 and 6 module must still receive credit before an Honours classification can be assigned.",
+  ];
   return (
-    <Card className="group relative overflow-hidden border border-indigo-50/50 bg-white/60 shadow-xl shadow-indigo-100/40 backdrop-blur-xl">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2 text-xl">
-          <Info className="h-6 w-6" />
-          Calculation Method
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4 sm:space-y-5">
-        <div className="rounded-md bg-blue-50 p-4 sm:p-5">
-          <p className="mb-2 text-base font-bold text-blue-900 sm:text-lg">
-            Indicator Score Formula:
+    <details className="group rounded-xl border border-border bg-white">
+      <summary className="flex cursor-pointer items-center justify-between gap-4 rounded-xl px-5 py-5 outline-offset-4 sm:px-6">
+        <span>
+          <span className="block font-display text-2xl tracking-[-0.02em]">
+            How your result is calculated
+          </span>
+          <span className="mt-1 block text-xs text-muted-foreground">
+            The weighting, the credits, and the small print.
+          </span>
+        </span>
+        <ChevronDown
+          className="size-4 shrink-0 text-muted-foreground transition-transform group-open:rotate-180"
+          aria-hidden="true"
+        />
+      </summary>
+      <div className="grid gap-7 border-t border-border px-5 py-6 sm:px-6 lg:grid-cols-[280px_1fr] lg:gap-10">
+        <div className="self-start rounded-lg bg-[#eef1e8] p-5">
+          <p className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
+            The weighted indicator
           </p>
-          <p className="break-words font-mono text-base leading-relaxed text-blue-800 sm:text-lg">
-            Indicator = (⅓ × L5 Average) + (⅔ × L6 Average)
+          <p className="font-display text-2xl leading-relaxed text-primary">
+            ⅓ × Level 5 average
+            <br />
+            <span className="text-muted-foreground">+</span> ⅔ × Level 6 average
           </p>
         </div>
-
-        <ul className="space-y-2.5 break-words text-sm leading-relaxed sm:text-base">
-          {rulesBeforeOptional.map((rule) => (
-            <Rule key={rule.content} color={rule.color}>
-              {rule.content}
-            </Rule>
+        <ol className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+          {rules.map((rule, index) => (
+            <li
+              key={rule}
+              className="flex gap-3 text-xs leading-6 text-muted-foreground"
+            >
+              <span
+                aria-hidden="true"
+                className="pt-0.5 font-mono text-[10px] text-primary"
+              >
+                0{index + 1}
+              </span>
+              <span>{rule}</span>
+            </li>
           ))}
-          <Rule color="bg-blue-500">
-            You must choose exactly{" "}
-            <strong>{describeOptionalCount(optionalModulesPerLevel)}</strong> at
-            each level.
-          </Rule>
-          {rulesAfterOptional.map((rule) => (
-            <Rule key={rule.content} color={rule.color}>
-              {rule.content}
-            </Rule>
-          ))}
-        </ul>
-      </CardContent>
-    </Card>
-  );
-}
-
-type RuleProps = {
-  color: string;
-  children: React.ReactNode;
-};
-
-function Rule({ color, children }: RuleProps) {
-  return (
-    <li className="flex items-start gap-3">
-      <span
-        className={`mt-2 h-2 w-2 flex-shrink-0 rounded-full ${color}`}
-      />
-      <span className="min-w-0 flex-1">{children}</span>
-    </li>
+        </ol>
+      </div>
+    </details>
   );
 }

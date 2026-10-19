@@ -8,18 +8,21 @@ type LevelSectionProps = {
   level: LevelId;
 };
 
-export function LevelSection({
-  config,
-  controller,
-  level,
-}: LevelSectionProps) {
+export function LevelSection({ config, controller, level }: LevelSectionProps) {
   const levelNumber = level === "l5" ? 5 : 6;
-
   return (
-    <section className="space-y-6">
-      <h2 className="mb-2 text-2xl font-extrabold tracking-tight text-gray-900">
-        Level {levelNumber} Modules
-      </h2>
+    <section aria-labelledby={`heading-${level}`} className="min-w-0 space-y-5">
+      <div className="flex items-center justify-between gap-3 pb-1">
+        <h2
+          id={`heading-${level}`}
+          className="font-display text-[1.75rem] tracking-[-0.025em]"
+        >
+          Level {levelNumber} modules
+        </h2>
+        <span className="text-[10px] text-muted-foreground">
+          {level === "l5" ? "⅓" : "⅔"} weighting
+        </span>
+      </div>
       <ModuleSection
         config={config}
         controller={controller}

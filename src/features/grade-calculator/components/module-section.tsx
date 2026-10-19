@@ -1,18 +1,5 @@
-import { BookOpen, Code } from "lucide-react";
-import {
-  Card,
-  CardContent,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
 import type { GradeCalculatorController } from "../hooks/use-grade-calculator";
-import { calculatorThemes } from "../theme";
-import type {
-  CourseConfig,
-  CourseModule,
-  LevelId,
-  ModuleType,
-} from "../types";
+import type { CourseConfig, CourseModule, LevelId, ModuleType } from "../types";
 import { AddModuleForm } from "./add-module-form";
 import { ModuleCard } from "./module-card";
 
@@ -33,38 +20,43 @@ export function ModuleSection({
 }: ModuleSectionProps) {
   const levelState = controller.levels[level];
   const isCore = moduleType === "core";
-  const Icon = config.icon === "book" ? BookOpen : Code;
   const allModules = isCore
     ? modules
     : [...modules, ...levelState.otherModules];
   const selectedCount = levelState.selectedOptionals.size;
-  const markStore = isCore
-    ? levelState.coreMarks
-    : levelState.optionalMarks;
-  const levelLabel = level === "l5" ? "L5" : "L6";
+  const markStore = isCore ? levelState.coreMarks : levelState.optionalMarks;
 
   return (
-    <Card className="border border-indigo-50/50 bg-white/60 shadow-xl shadow-indigo-100/40 backdrop-blur-xl transition-all duration-300 hover:shadow-indigo-200/40">
-      <CardHeader>
-        <CardTitle className="flex items-center gap-2">
-          <Icon className="h-5 w-5" />
-          {levelLabel} {isCore ? "Core" : "Optional"} Modules
-          {isCore ? (
-            <span className="text-sm text-red-600">(Required)</span>
-          ) : (
-            <span
-              className={`text-sm ${calculatorThemes[config.theme].optionalLabel}`}
-            >
-              (Choose {config.optionalModulesPerLevel})
-            </span>
-          )}
-        </CardTitle>
-      </CardHeader>
-      <CardContent className="space-y-4">
+    <section
+      className="overflow-hidden rounded-xl border border-border bg-white"
+      aria-labelledby={`heading-${level} ${level}-${moduleType}-heading`}
+    >
+      <div className="flex items-center justify-between gap-2 border-b border-border px-4 py-4">
+        <h3
+          id={`${level}-${moduleType}-heading`}
+          className="text-[13px] font-semibold"
+        >
+          {isCore ? "Core modules" : "Optional modules"}
+        </h3>
+        <span
+          aria-live={isCore ? undefined : "polite"}
+          className={`text-[10px] ${!isCore && selectedCount === config.optionalModulesPerLevel ? "text-primary" : "text-muted-foreground"}`}
+        >
+          {isCore
+            ? "All required"
+            : `${selectedCount} / ${config.optionalModulesPerLevel} selected`}
+        </span>
+      </div>
+      <div className="flex items-center justify-between px-4 pb-1 pt-3 text-[9px] uppercase tracking-[0.08em] text-muted-foreground">
+        <span>
+          {isCore ? "Module" : `Choose ${config.optionalModulesPerLevel}`}
+        </span>
+        <span>Mark / 100</span>
+      </div>
+      <div className="space-y-1 p-2">
         {allModules.map((module) => {
           const selected =
             isCore || levelState.selectedOptionals.has(module.id);
-
           return (
             <ModuleCard
               key={module.id}
@@ -83,22 +75,17 @@ export function ModuleSection({
               onOptionalToggle={(checked) =>
                 controller.toggleOptional(level, module.id, checked)
               }
-              onRemove={() =>
-                controller.removeOtherModule(level, module.id)
-              }
+              onRemove={() => controller.removeOtherModule(level, module.id)}
             />
           );
         })}
-
         {!isCore && (
-          <div className="mt-4">
+          <div className="px-1 pb-1 pt-2">
             <AddModuleForm
               level={level}
               name={levelState.newModuleName}
               visible={levelState.showAddForm}
-              onNameChange={(name) =>
-                controller.setNewModuleName(level, name)
-              }
+              onNameChange={(name) => controller.setNewModuleName(level, name)}
               onAdd={() => controller.addOtherModule(level)}
               onVisibleChange={(visible) =>
                 controller.setAddForm(level, visible)
@@ -106,7 +93,7 @@ export function ModuleSection({
             />
           </div>
         )}
-      </CardContent>
-    </Card>
+      </div>
+    </section>
   );
 }

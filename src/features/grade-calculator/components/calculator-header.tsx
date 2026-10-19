@@ -1,40 +1,30 @@
 import Link from "next/link";
-import { ArrowLeft, BookOpen, Code } from "lucide-react";
-import { Button } from "@/components/ui/button";
-import { calculatorThemes } from "../theme";
-import type { CourseConfig } from "../types";
+import { ArrowDownRight, ArrowLeft } from "lucide-react";
+import { SiteBrand } from "@/components/SiteBrand";
 
-type CalculatorHeaderProps = Pick<CourseConfig, "name" | "icon" | "theme">;
-
-export function CalculatorHeader({
-  name,
-  icon,
-  theme,
-}: CalculatorHeaderProps) {
-  const Icon = icon === "book" ? BookOpen : Code;
-
+export function CalculatorHeader() {
   return (
-    <header className="relative z-40 sticky top-0 border-b border-indigo-100/50 bg-white/70 shadow-sm backdrop-blur-xl">
-      <div className="mx-auto flex max-w-7xl items-center gap-3 px-4 py-4 sm:px-6 lg:px-8">
-        <Button asChild variant="ghost" size="sm">
-          <Link href="/">
-            <ArrowLeft className="mr-2 h-4 w-4" />
-            Back
-          </Link>
-        </Button>
-        <div
-          className={`rounded-xl bg-gradient-to-br p-2.5 shadow-lg ${calculatorThemes[theme].icon}`}
+    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
+      <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between gap-3 px-5 sm:px-8">
+        <SiteBrand />
+        <nav
+          aria-label="Calculator navigation"
+          className="flex shrink-0 items-center gap-3 sm:gap-6"
         >
-          <Icon className="h-6 w-6 text-white" />
-        </div>
-        <div>
-          <h1 className="bg-gradient-to-r from-indigo-700 to-purple-600 bg-clip-text text-xl font-extrabold tracking-tight text-transparent">
-            {name} Calculator
-          </h1>
-          <p className="mt-0.5 text-[10px] font-bold uppercase tracking-widest text-gray-400">
-            L5/L6 Weighted Classification
-          </p>
-        </div>
+          <Link
+            href="/"
+            className="hidden min-h-10 min-w-10 items-center justify-center gap-2 rounded-md text-xs text-muted-foreground transition-colors hover:text-primary sm:inline-flex"
+          >
+            <ArrowLeft className="size-4" aria-hidden="true" />
+            <span className="sr-only sm:not-sr-only">All courses</span>
+          </Link>
+          <a
+            href="#classification-results"
+            className="inline-flex min-h-10 items-center gap-1.5 whitespace-nowrap rounded-sm text-xs font-medium text-primary outline-offset-4"
+          >
+            Your result <ArrowDownRight className="size-4" aria-hidden="true" />
+          </a>
+        </nav>
       </div>
     </header>
   );

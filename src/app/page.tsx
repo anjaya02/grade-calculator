@@ -1,307 +1,299 @@
-"use client";
-
 import Link from "next/link";
-import { Button } from "@/components/ui/button";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "@/components/ui/card";
-import { GraduationCap, BookOpen, Code, TerminalSquare } from "lucide-react";
-import { CheckCircle } from "lucide-react";
+  ArrowDown,
+  ArrowRight,
+  BookOpen,
+  Code2,
+  ShieldCheck,
+} from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { SiteBrand } from "@/components/SiteBrand";
 import Footer from "@/components/Footer";
 import { UsageBanner } from "@/components/UsageBanner";
-import { motion, Variants } from "framer-motion";
 
-const containerVariants: Variants = {
-  hidden: { opacity: 0 },
-  visible: {
-    opacity: 1,
-    transition: { staggerChildren: 0.1, delayChildren: 0.1 },
+const courses = [
+  {
+    id: "cs",
+    name: "Computer Science",
+    icon: BookOpen,
+    description:
+      "Your core modules and two optionals at each level, brought together in one weighted result.",
+    optionals: "2 optionals per level",
+    link: "/cs-calculator",
   },
-};
+  {
+    id: "se",
+    name: "Software Engineering",
+    icon: Code2,
+    description:
+      "A calculation tailored to the SE pathway, with your core modules and one optional at each level.",
+    optionals: "1 optional per level",
+    link: "/se-calculator",
+  },
+] as const;
 
-const itemVariants: Variants = {
-  hidden: { y: 20, opacity: 0 },
-  visible: {
-    y: 0,
-    opacity: 1,
-    transition: { duration: 0.5, ease: "easeInOut" },
+const bands = [
+  { label: "First Class", range: "70%+", detail: "First class honours" },
+  {
+    label: "Second Upper",
+    range: "60–69%",
+    detail: "Upper second class honours",
   },
-};
+  {
+    label: "Second Lower",
+    range: "50–59%",
+    detail: "Lower second class honours",
+  },
+  { label: "Third Class", range: "40–49%", detail: "Third class honours" },
+] as const;
 
 export default function HomePage() {
   return (
-    <div className="min-h-screen bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-indigo-50 via-white to-sky-50 overflow-hidden relative flex flex-col">
-      {/* Abstract Background Shapes */}
-      <div className="pointer-events-none absolute top-0 -left-4 w-96 h-96 bg-purple-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse" />
-      <div className="pointer-events-none absolute top-0 -right-4 w-96 h-96 bg-sky-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-1000" />
-      <div className="pointer-events-none absolute -bottom-8 left-20 w-96 h-96 bg-indigo-300 rounded-full mix-blend-multiply filter blur-3xl opacity-20 animate-pulse delay-2000" />
+    <div className="flex min-h-screen flex-col">
+      <header className="border-b border-border">
+        <div className="mx-auto flex h-20 max-w-6xl items-center justify-between gap-4 px-5 sm:px-8">
+          <SiteBrand />
+          <nav aria-label="Main navigation" className="flex items-center gap-6">
+            <a
+              href="#how-it-works"
+              className="hidden text-sm text-muted-foreground transition-colors hover:text-foreground sm:block"
+            >
+              How it works
+            </a>
+            <a
+              href="#calculators"
+              className="inline-flex items-center gap-2 rounded-sm text-sm font-medium text-primary outline-offset-4"
+            >
+              Get started <ArrowRight className="size-4" aria-hidden="true" />
+            </a>
+          </nav>
+        </div>
+      </header>
 
-      {/* Header */}
-      <motion.header
-        initial={{ y: -50, opacity: 0 }}
-        animate={{ y: 0, opacity: 1 }}
-        transition={{ duration: 0.6, ease: "easeInOut" }}
-        className="relative z-10 bg-white/70 backdrop-blur-xl border-b border-indigo-100/50 shadow-sm sticky top-0"
-      >
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
-          <div className="flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="bg-gradient-to-br from-indigo-500 to-purple-600 p-2.5 rounded-xl shadow-lg shadow-indigo-200">
-                <GraduationCap className="h-7 w-7 text-white" />
-              </div>
-              <div>
-                <h1 className="text-xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-indigo-700 to-purple-600 tracking-tight">
-                  Degree Calculator
-                </h1>
-                <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mt-0.5">
-                  IIT Sri Lanka
+      <main className="mx-auto w-full max-w-6xl flex-1 px-5 sm:px-8">
+        <section
+          className="page-enter grid items-center gap-12 pb-16 pt-14 sm:pb-20 sm:pt-20 lg:grid-cols-[1fr_290px] lg:gap-20 lg:pt-24"
+          aria-labelledby="hero-heading"
+        >
+          <div>
+            <p className="mb-6 flex items-center gap-2.5 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              <span
+                className="size-1.5 rounded-full bg-primary"
+                aria-hidden="true"
+              />
+              Built for IIT students
+            </p>
+            <h1
+              id="hero-heading"
+              className="max-w-3xl font-display text-[3.25rem] font-normal leading-[1.06] tracking-[-0.045em] sm:text-[4.75rem]"
+            >
+              A clearer view of
+              <br className="hidden sm:block" /> your{" "}
+              <span className="italic text-primary">degree.</span>
+            </h1>
+            <p className="mt-6 max-w-lg text-[15px] leading-7 text-muted-foreground sm:text-base">
+              Turn your Level 5 and 6 marks into an estimated degree
+              classification. A little more clarity for the work you&apos;ve put
+              in.
+            </p>
+            <div className="mt-8 flex flex-wrap items-center gap-x-6 gap-y-4">
+              <Button
+                asChild
+                className="h-12 rounded-lg px-6 text-sm shadow-none"
+              >
+                <a href="#calculators">
+                  Choose your course{" "}
+                  <ArrowDown className="ml-2 size-4" aria-hidden="true" />
+                </a>
+              </Button>
+              <span className="inline-flex items-center gap-2 text-xs text-muted-foreground">
+                <ShieldCheck
+                  className="size-4 text-primary"
+                  aria-hidden="true"
+                />{" "}
+                Your marks stay on your device
+              </span>
+            </div>
+          </div>
+
+          <div className="relative hidden lg:block">
+            <div
+              aria-hidden="true"
+              className="absolute -inset-2 translate-x-2 translate-y-2 rounded-xl border border-border bg-[#eeefe6]"
+            />
+            <div className="relative rounded-xl border border-border bg-[#fffefa] p-6">
+              <div className="mb-9 flex items-center justify-between border-b border-border pb-4">
+                <p className="text-[10px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+                  The weighting
                 </p>
+                <span
+                  aria-hidden="true"
+                  className="font-mono text-[10px] text-muted-foreground"
+                >
+                  L5 / L6
+                </span>
+              </div>
+              <div
+                className="flex items-end gap-2"
+                aria-label="Level 5 contributes one third; Level 6 contributes two thirds"
+              >
+                <div className="flex h-20 flex-1 items-end rounded-t-sm bg-[#dbe5d4] p-3 font-display text-3xl text-primary">
+                  ⅓
+                </div>
+                <div className="flex h-36 flex-[2] items-end rounded-t-sm bg-primary p-3 font-display text-4xl text-white">
+                  ⅔
+                </div>
+              </div>
+              <div className="mt-3 flex gap-2 text-[11px] text-muted-foreground">
+                <span className="flex-1">Level 5</span>
+                <span className="flex-[2]">Level 6</span>
+              </div>
+              <div className="mt-7 flex items-baseline justify-between border-t border-border pt-4">
+                <span className="text-xs text-muted-foreground">
+                  Best credits considered
+                </span>
+                <span className="font-display text-2xl">220</span>
               </div>
             </div>
-
-            <Link
-              href="https://github.com/anjaya02/grade-calculator"
-              target="_blank"
-            >
-              <Button
-                variant="outline"
-                className="hidden sm:flex border-indigo-100 text-indigo-700 hover:bg-indigo-50 rounded-full font-medium transition-colors"
-              >
-                <TerminalSquare className="w-4 h-4 mr-2" />
-                View Source
-              </Button>
-            </Link>
           </div>
-        </div>
-      </motion.header>
+        </section>
 
-      {/* Main Content */}
-      <main className="relative z-10 flex-1 w-full max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-16 lg:py-24">
-        <motion.div
-          initial={{ scale: 0.95, opacity: 0 }}
-          animate={{ scale: 1, opacity: 1 }}
-          transition={{ duration: 0.7, ease: "easeInOut" }}
-          className="text-center mb-16 md:mb-24"
+        <section
+          id="calculators"
+          aria-labelledby="course-heading"
+          className="scroll-mt-8"
         >
-          <h2 className="text-5xl md:text-7xl font-extrabold text-gray-900 mb-6 tracking-tight leading-tight">
-            Forecast your <br />
-            <span className="text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 via-purple-600 to-sky-500">
-              Academic Future
+          <div className="mb-6 flex items-baseline justify-between gap-4 border-t border-border pt-7">
+            <h2
+              id="course-heading"
+              className="text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground"
+            >
+              Choose your pathway
+            </h2>
+            <span className="hidden text-xs text-muted-foreground sm:block">
+              Computer Science & Software Engineering
             </span>
-          </h2>
-          <p className="text-lg md:text-xl text-gray-500 max-w-2xl mx-auto font-medium leading-relaxed">
-            Eliminate the guesswork. Input your module marks and instantly
-            calculate your final degree classification for CS & SE programs.
-          </p>
-        </motion.div>
-
-        {/* Degree Program Selection */}
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="grid md:grid-cols-2 gap-8 max-w-4xl mx-auto mb-10"
-        >
-          {/* Computer Science Option */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ y: -8 }}
-            className="h-full"
-          >
-            <Card className="h-full border border-indigo-50/50 shadow-2xl shadow-indigo-100/40 bg-white/60 backdrop-blur-xl overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-indigo-500/5 to-purple-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-              <CardHeader className="text-center pb-2 pt-8">
-                <div className="mx-auto mb-6 p-4 rounded-3xl bg-gradient-to-br from-indigo-100 to-purple-100 shadow-inner w-fit transform group-hover:scale-110 group-hover:rotate-3 transition-all duration-500">
-                  <BookOpen className="h-10 w-10 text-indigo-600" />
-                </div>
-                <CardTitle className="text-3xl font-bold text-gray-900 mb-2">
-                  Computer Science
-                </CardTitle>
-                <CardDescription className="text-base font-medium text-gray-500">
-                  Standard L5/L6 calculation scheme
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col h-[calc(100%-12rem)] pb-8 px-8">
-                <ul className="space-y-4 text-sm text-gray-600 mb-8 flex-1 mt-6 font-medium">
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-indigo-500 flex-shrink-0" />{" "}
-                    L5 and L6 core/optional modules
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-indigo-500 flex-shrink-0" />{" "}
-                    Automatic lowest-module exclusion
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-indigo-500 flex-shrink-0" />{" "}
-                    1/3 L5 + 2/3 L6 ratio weighting
-                  </li>
-                </ul>
-                <Link href="/cs-calculator" className="w-full mt-auto block">
-                  <Button className="w-full h-14 text-lg font-bold bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-500 hover:to-purple-500 text-white shadow-xl shadow-indigo-200 transition-all rounded-xl border-t border-white/20 group-hover:shadow-indigo-300">
-                    Calculate CS Degree
+          </div>
+          <div className="grid gap-5 md:grid-cols-2">
+            {courses.map(
+              ({ id, name, icon: Icon, description, optionals, link }) => (
+                <article
+                  key={id}
+                  className="group flex flex-col rounded-xl border border-border bg-white p-6 transition-[border-color,box-shadow] duration-200 hover:border-[#a3b79b] hover:shadow-[0_4px_24px_-12px_#25352d26] sm:p-8"
+                >
+                  <div className="mb-8 flex items-center justify-between">
+                    <span className="flex size-10 items-center justify-center rounded-lg border border-border bg-background text-primary">
+                      <Icon
+                        className="size-5"
+                        strokeWidth={1.5}
+                        aria-hidden="true"
+                      />
+                    </span>
+                    <span className="font-mono text-xs uppercase tracking-wider text-muted-foreground">
+                      {id}
+                    </span>
+                  </div>
+                  <h3 className="font-display text-[2rem] leading-tight tracking-[-0.025em]">
+                    {name}
+                  </h3>
+                  <p className="mb-6 mt-3 max-w-sm flex-1 text-sm leading-6 text-muted-foreground">
+                    {description}
+                  </p>
+                  <div className="mb-7 flex flex-wrap gap-x-4 gap-y-2 text-[11px] font-medium text-muted-foreground">
+                    <span>Levels 5 & 6</span>
+                    <span aria-hidden="true">/</span>
+                    <span>{optionals}</span>
+                  </div>
+                  <Button
+                    asChild
+                    variant="outline"
+                    className="h-12 w-full justify-between rounded-lg border-border bg-white px-4 text-primary shadow-none transition-colors group-hover:border-primary group-hover:bg-primary group-hover:text-white"
+                  >
+                    <Link href={link}>
+                      Calculate {id.toUpperCase()} Degree{" "}
+                      <ArrowRight className="size-4" aria-hidden="true" />
+                    </Link>
                   </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </motion.div>
-
-          {/* Software Engineering Option */}
-          <motion.div
-            variants={itemVariants}
-            whileHover={{ y: -8 }}
-            className="h-full"
-          >
-            <Card className="h-full border border-sky-50/50 shadow-2xl shadow-sky-100/40 bg-white/60 backdrop-blur-xl overflow-hidden group">
-              <div className="absolute inset-0 bg-gradient-to-br from-sky-500/5 to-blue-500/5 opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-              <CardHeader className="text-center pb-2 pt-8">
-                <div className="mx-auto mb-6 p-4 rounded-3xl bg-gradient-to-br from-sky-100 to-blue-100 shadow-inner w-fit transform group-hover:scale-110 group-hover:-rotate-3 transition-all duration-500">
-                  <Code className="h-10 w-10 text-sky-600" />
-                </div>
-                <CardTitle className="text-3xl font-bold text-gray-900 mb-2">
-                  Software Eng.
-                </CardTitle>
-                <CardDescription className="text-base font-medium text-gray-500">
-                  Tailored L5/L6 calculation scheme
-                </CardDescription>
-              </CardHeader>
-              <CardContent className="flex flex-col h-[calc(100%-12rem)] pb-8 px-8">
-                <ul className="space-y-4 text-sm text-gray-600 mb-8 flex-1 mt-6 font-medium">
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-sky-500 flex-shrink-0" />{" "}
-                    L5 and L6 core/optional modules
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-sky-500 flex-shrink-0" />{" "}
-                    Automatic lowest-module exclusion
-                  </li>
-                  <li className="flex items-center gap-3">
-                    <CheckCircle className="h-5 w-5 text-sky-500 flex-shrink-0" />{" "}
-                    1/3 L5 + 2/3 L6 ratio weighting
-                  </li>
-                </ul>
-                <Link href="/se-calculator" className="w-full mt-auto block">
-                  <Button className="w-full h-14 text-lg font-bold bg-gradient-to-r from-sky-500 to-blue-600 hover:from-sky-400 hover:to-blue-500 text-white shadow-xl shadow-sky-200 transition-all rounded-xl border-t border-white/20 group-hover:shadow-sky-300">
-                    Calculate SE Degree
-                  </Button>
-                </Link>
-              </CardContent>
-            </Card>
-          </motion.div>
-        </motion.div>
+                </article>
+              ),
+            )}
+          </div>
+        </section>
 
         <UsageBanner />
 
-        {/* Classification Categories - Sleek Look */}
-        <motion.div
-          initial={{ opacity: 0, y: 30 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true, margin: "-100px" }}
-          transition={{ duration: 0.6 }}
-          className="mb-16"
+        <section
+          id="how-it-works"
+          className="grid gap-10 border-t border-border py-14 sm:py-20 lg:grid-cols-[1fr_1.25fr] lg:gap-20"
+          aria-labelledby="method-heading"
         >
-          <div className="text-center mb-10">
-            <h3 className="text-3xl font-extrabold text-gray-900">
-              Award Classifications
-            </h3>
-            <p className="text-gray-500 mt-2 font-medium">
-              The standard grading bands mapped to your final average
+          <div>
+            <p className="mb-4 text-[11px] font-medium uppercase tracking-[0.16em] text-muted-foreground">
+              The details, made simple
+            </p>
+            <h2
+              id="method-heading"
+              className="font-display text-4xl leading-tight tracking-[-0.025em]"
+            >
+              Every mark has
+              <br /> its place.
+            </h2>
+            <p className="mt-5 max-w-sm text-sm leading-7 text-muted-foreground">
+              Your best 220 credits determine the weighted indicator. Level 6
+              carries twice the weight of Level 5, and the final indicator is
+              rounded before classification.
+            </p>
+            <p className="mt-4 max-w-sm text-xs leading-6 text-muted-foreground">
+              All Level 5 and 6 modules must meet the pass requirements. The
+              calculators include a full breakdown of how your result is worked
+              out.
             </p>
           </div>
-
-          <div className="grid grid-cols-2 md:grid-cols-5 gap-4 lg:gap-6">
-            {[
-              {
-                title: "First Class",
-                range: "70%+",
-                emoji: "🥇",
-                gradient: "from-emerald-400 to-teal-500",
-                text: "text-emerald-700",
-                shadow: "shadow-emerald-200/50",
-              },
-              {
-                title: "Second Upper",
-                range: "60-69%",
-                emoji: "🥈",
-                gradient: "from-blue-400 to-indigo-500",
-                text: "text-blue-700",
-                shadow: "shadow-blue-200/50",
-              },
-              {
-                title: "Second Lower",
-                range: "50-59%",
-                emoji: "🥉",
-                gradient: "from-amber-400 to-orange-500",
-                text: "text-amber-700",
-                shadow: "shadow-orange-200/50",
-              },
-              {
-                title: "Third Class",
-                range: "40-49%",
-                emoji: "🎖️",
-                gradient: "from-purple-400 to-fuchsia-500",
-                text: "text-purple-700",
-                shadow: "shadow-purple-200/50",
-              },
-              {
-                title: "No Classification",
-                range: "Award not met",
-                emoji: "❌",
-                gradient: "from-rose-400 to-red-500",
-                text: "text-rose-700",
-                shadow: "shadow-rose-200/50",
-              },
-            ].map((band, i) => (
-              <motion.div
-                key={i}
-                whileHover={{ y: -5, scale: 1.05 }}
-                className="group"
-              >
-                <div
-                  className={`p-5 rounded-3xl bg-white/80 backdrop-blur-md border border-white shadow-xl ${band.shadow} relative overflow-hidden h-full flex flex-col items-center justify-center text-center transition-all`}
-                >
-                  <div
-                    className={`absolute top-0 left-0 w-full h-1.5 bg-gradient-to-r ${band.gradient}`}
-                  />
-                  <div className="text-4xl mb-3 transform group-hover:scale-125 group-hover:-rotate-6 transition-transform duration-300 drop-shadow-sm">
-                    {band.emoji}
-                  </div>
-                  <h4 className={`font-bold ${band.text} mb-1 tracking-tight`}>
-                    {band.title}
-                  </h4>
-                  <p className="text-sm font-bold text-gray-400 bg-gray-50 px-2.5 py-0.5 rounded-full">
-                    {band.range}
-                  </p>
-                </div>
-              </motion.div>
-            ))}
-          </div>
-
-          {/* Disclaimer Alert */}
-          <div className="mt-16 bg-gradient-to-br from-amber-50 to-orange-50 border-2 border-amber-300/50 rounded-2xl p-6 text-amber-900 max-w-3xl mx-auto shadow-xl shadow-amber-200/40 relative overflow-hidden backdrop-blur-sm">
-            <div className="absolute top-0 right-0 w-32 h-32 bg-amber-400/10 rounded-full -mr-16 -mt-16" />
-            <div className="absolute bottom-0 left-0 w-24 h-24 bg-orange-400/10 rounded-full -ml-12 -mb-12" />
-            <div className="relative flex items-start gap-4">
-              <div className="flex-1">
-                <h4 className="font-bold text-amber-900 mb-1.5 text-lg">
-                  Important Notice
-                </h4>
-                <p className="text-sm leading-relaxed font-medium text-amber-800">
-                  <strong>Disclaimer:</strong> This tool is not officially
-                  affiliated with IIT. Results shown are approximate and for
-                  guidance purposes only. Please consult your academic advisor
-                  for final grades.
-                </p>
-              </div>
+          <div>
+            <div className="mb-2 flex items-baseline justify-between gap-4 pb-4">
+              <h3 className="text-sm font-medium">
+                Honours classification guide
+              </h3>
+              <span className="text-[11px] text-muted-foreground">
+                Rounded indicator
+              </span>
             </div>
+            <dl>
+              {bands.map(({ label, range, detail }) => (
+                <div
+                  key={label}
+                  className="flex items-center justify-between gap-4 border-t border-border py-4"
+                >
+                  <dt>
+                    <span className="text-sm font-medium">{label}</span>
+                    <span className="mt-1 hidden text-xs text-muted-foreground sm:block">
+                      {detail}
+                    </span>
+                  </dt>
+                  <dd className="font-display text-[1.75rem] leading-none tracking-tight text-primary">
+                    {range}
+                  </dd>
+                </div>
+              ))}
+            </dl>
+            <p className="border-t border-border pt-4 text-xs leading-6 text-muted-foreground">
+              An indicator below 40%, or a module mark below the pass mark, does
+              not receive an Honours classification.
+            </p>
           </div>
-        </motion.div>
-      </main>
+        </section>
 
-      {/* Footer */}
+        <aside className="mb-14 flex flex-col items-start gap-1 rounded-lg border border-border bg-[#eeefe7] px-5 py-4 text-xs leading-6 text-muted-foreground sm:flex-row sm:gap-3">
+          <span className="shrink-0 font-medium text-foreground">
+            A small note.
+          </span>
+          <p className="flex-1">
+            This is an independent student tool, not an official IIT service.
+            Results are estimates for guidance; your academic advisor can
+            confirm your final award.
+          </p>
+        </aside>
+      </main>
       <Footer />
     </div>
   );
