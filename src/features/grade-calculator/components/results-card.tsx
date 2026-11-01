@@ -214,8 +214,9 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
         <div className="mt-5 flex items-start gap-2 border-t border-border pt-4 text-[10px] leading-5 text-muted-foreground">
           <LockKeyhole className="mt-1 size-3 shrink-0" aria-hidden="true" />
           <p>
-            Your marks stay in your browser. Completed visits contribute to the
-            public usage count.
+            Your marks stay in your browser. Completing or editing a calculation
+            can contribute to the public usage count; restoring saved marks does
+            not.
           </p>
         </div>
       </div>

@@ -39,3 +39,5 @@ export type LevelState = {
   showAddForm: boolean;
   newModuleName: string;
 };
+
+export type CalculatorState = Record<LevelId, LevelState>;

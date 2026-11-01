@@ -1,11 +1,19 @@
 "use client";
 
-import { useReducer } from "react";
+import { useEffect, useReducer, useState } from "react";
 import {
   calculateHonoursClassification,
   type DegreeModule,
 } from "@/lib/degree-classification";
+import {
+  createEmptyCalculatorState,
+  getCalculatorStorageKey,
+  hasCalculatorDraft,
+  parseCalculatorDraft,
+  serializeCalculatorDraft,
+} from "../draft-storage";
 import type {
+  CalculatorState,
   CourseConfig,
   LevelId,
   LevelState,
@@ -13,9 +21,7 @@ import type {
   OtherModule,
 } from "../types";
 
-type CalculatorState = Record<LevelId, LevelState>;
-
-type CalculatorAction =
+type LevelAction =
   | {
       type: "set-mark";
       level: LevelId;
@@ -35,19 +41,24 @@ type CalculatorAction =
   | { type: "add-other-module"; level: LevelId }
   | { type: "remove-other-module"; level: LevelId; moduleId: string };
 
-const createLevelState = (): LevelState => ({
-  coreMarks: {},
-  optionalMarks: {},
-  selectedOptionals: new Set(),
-  otherModules: [],
-  showAddForm: false,
-  newModuleName: "",
-});
+type CalculatorAction =
+  | LevelAction
+  | { type: "restore"; course: CourseConfig["id"]; levels: CalculatorState }
+  | { type: "reset" };
 
-const initialState: CalculatorState = {
-  l5: createLevelState(),
-  l6: createLevelState(),
+type CalculatorSession = {
+  course: CourseConfig["id"] | null;
+  levels: CalculatorState;
+  hasUserChanges: boolean;
 };
+
+export type DraftStorageStatus =
+  | "loading"
+  | "ready"
+  | "saved"
+  | "invalid"
+  | "unavailable"
+  | "reset-error";
 
 function updateLevel(
   state: CalculatorState,
@@ -65,7 +76,7 @@ function updateLevel(
 
 function calculatorReducer(
   state: CalculatorState,
-  action: CalculatorAction,
+  action: LevelAction,
 ): CalculatorState {
   const levelState = state[action.level];
 
@@ -77,8 +88,10 @@ function calculatorReducer(
       const value = Number.parseFloat(action.value);
 
       if (!Number.isNaN(value) && value >= 0 && value <= 100) {
+        if (marks[action.moduleId] === value) return state;
         marks[action.moduleId] = value;
       } else if (action.value === "") {
+        if (marks[action.moduleId] === undefined) return state;
         delete marks[action.moduleId];
       } else {
         return state;
@@ -88,6 +101,9 @@ function calculatorReducer(
     }
 
     case "toggle-optional": {
+      if (levelState.selectedOptionals.has(action.moduleId) === action.checked) {
+        return state;
+      }
       const selectedOptionals = new Set(levelState.selectedOptionals);
 
       if (action.checked) {
@@ -153,6 +169,35 @@ function calculatorReducer(
   }
 }
 
+function sessionReducer(
+  state: CalculatorSession,
+  action: CalculatorAction,
+): CalculatorSession {
+  if (action.type === "restore") {
+    return { course: action.course, levels: action.levels, hasUserChanges: false };
+  }
+  if (action.type === "reset") {
+    return {
+      ...state,
+      levels: createEmptyCalculatorState(),
+      hasUserChanges: false,
+    };
+  }
+  // Ignore interactions until the initial browser draft has been read.
+  if (state.course === null) return state;
+
+  const levels = calculatorReducer(state.levels, action);
+  if (levels === state.levels) return state;
+
+  return {
+    ...state,
+    levels,
+    hasUserChanges:
+      state.hasUserChanges ||
+      (action.type !== "set-add-form" && action.type !== "set-new-module-name"),
+  };
+}
+
 function isLevelComplete(
   config: CourseConfig,
   state: CalculatorState,
@@ -207,7 +252,58 @@ function buildModuleList(
 }
 
 export function useGradeCalculator(config: CourseConfig) {
-  const [levels, dispatch] = useReducer(calculatorReducer, initialState);
+  const [session, dispatch] = useReducer(sessionReducer, null, () => ({
+    course: null,
+    levels: createEmptyCalculatorState(),
+    hasUserChanges: false,
+  }));
+  const [storageStatus, setStorageStatus] =
+    useState<DraftStorageStatus>("loading");
+  const { levels, hasUserChanges } = session;
+  const isReady = session.course === config.id;
+  const hasDraft = hasCalculatorDraft(levels);
+
+  useEffect(() => {
+    let restored = createEmptyCalculatorState();
+    let status: DraftStorageStatus = "ready";
+    try {
+      const key = getCalculatorStorageKey(config.id);
+      const raw = window.localStorage.getItem(key);
+      if (raw !== null) {
+        const saved = parseCalculatorDraft(raw, config);
+        if (saved) {
+          restored = saved;
+          status = hasCalculatorDraft(saved) ? "saved" : "ready";
+        } else {
+          window.localStorage.removeItem(key);
+          status = "invalid";
+        }
+      }
+    } catch {
+      status = "unavailable";
+    }
+    dispatch({ type: "restore", course: config.id, levels: restored });
+    setStorageStatus(status);
+  }, [config]);
+
+  useEffect(() => {
+    // Never overwrite a saved draft with the empty server-rendered state.
+    // Restoration itself also needs no write and is not a new calculation.
+    if (!isReady || !hasUserChanges) return;
+    try {
+      const key = getCalculatorStorageKey(config.id);
+      if (hasDraft) {
+        window.localStorage.setItem(key, serializeCalculatorDraft(config, levels));
+        setStorageStatus("saved");
+      } else {
+        window.localStorage.removeItem(key);
+        setStorageStatus("ready");
+      }
+    } catch {
+      setStorageStatus("unavailable");
+    }
+  }, [config, levels, isReady, hasUserChanges, hasDraft]);
+
   const isComplete =
     isLevelComplete(config, levels, "l5") &&
     isLevelComplete(config, levels, "l6");
@@ -225,6 +321,25 @@ export function useGradeCalculator(config: CourseConfig) {
     levels,
     results,
     hasOtherModulesSelected,
+    isReady,
+    hasUserChanges,
+    storageStatus,
+    canReset:
+      hasDraft ||
+      storageStatus === "reset-error" ||
+      Object.values(levels).some(
+        (level) => level.showAddForm || level.newModuleName !== "",
+      ),
+    reset: () => {
+      // Removing this course's key leaves the other course's draft untouched.
+      try {
+        window.localStorage.removeItem(getCalculatorStorageKey(config.id));
+        setStorageStatus("ready");
+      } catch {
+        setStorageStatus("reset-error");
+      }
+      dispatch({ type: "reset" });
+    },
     setMark: (
       level: LevelId,
       moduleType: ModuleType,

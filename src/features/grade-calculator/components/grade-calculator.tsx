@@ -7,6 +7,7 @@ import type { CourseConfig } from "../types";
 import { CalculationMethod } from "./calculation-method";
 import { CalculatorHeader } from "./calculator-header";
 import { Disclaimer } from "./disclaimer";
+import { DraftControls } from "./draft-controls";
 import { LevelSection } from "./level-section";
 import { ResultsCard } from "./results-card";
 
@@ -14,7 +15,10 @@ type GradeCalculatorProps = { config: CourseConfig };
 
 export function GradeCalculator({ config }: GradeCalculatorProps) {
   const controller = useGradeCalculator(config);
-  useCalculationUsage(config.id, controller.results !== null);
+  useCalculationUsage(
+    config.id,
+    controller.hasUserChanges && controller.results !== null,
+  );
 
   return (
     <div className="flex min-h-screen flex-col">
@@ -31,13 +35,19 @@ export function GradeCalculator({ config }: GradeCalculatorProps) {
             Select your optional modules and enter your marks. Your weighted
             result updates as soon as every required mark is in.
           </p>
+          <DraftControls controller={controller} />
         </div>
 
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-10">
-          <div className="grid min-w-0 items-start gap-8 xl:grid-cols-2">
+          <fieldset
+            disabled={!controller.isReady}
+            aria-busy={!controller.isReady}
+            className="grid min-w-0 items-start gap-8 xl:grid-cols-2"
+          >
+            <legend className="sr-only">Module marks</legend>
             <LevelSection config={config} controller={controller} level="l5" />
             <LevelSection config={config} controller={controller} level="l6" />
-          </div>
+          </fieldset>
           <aside
             className="min-w-0 lg:top-24 lg:[@media(min-height:50rem)]:sticky"
             aria-label="Your classification summary"

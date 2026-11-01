@@ -18,14 +18,38 @@ Built with **Next.js**, **TypeScript**, **Tailwind CSS**, and **shadcn/ui** for 
 
 ---
 
+## Saved marks
+
+Each calculator automatically saves its marks, selected optional modules, and
+custom modules in this browser's local storage. CS and SE keep separate drafts.
+Refreshing the page or returning in the same browser restores the saved setup;
+no account or additional backend is required. The status below the calculator
+introduction confirms whether saving is available.
+
+Use **Reset**, then **Reset marks**, to clear the current course's form and saved
+draft. The other course is unaffected. Invalid or outdated drafts are discarded
+safely; calculation still works when browser storage is blocked or full, but
+marks cannot be saved. Clearing site data also removes saved marks, and private
+browsing usually removes them when the private session ends. Drafts are tied to
+the browser and website address and do not sync between devices.
+
+Drafts carry a storage version; bump `CALCULATOR_STORAGE_VERSION` in
+`src/features/grade-calculator/draft-storage.ts` when a major schema or regulation
+change makes earlier drafts incompatible. Transient custom-module form text and
+calculated results are not persisted; results are recalculated from the restored
+marks and current course configuration.
+
+---
+
 ## Public usage counts
 
 The home-page banner shows CS, SE, and combined completed-calculation totals.
-One use is recorded the first time a complete set of marks produces results
-during a calculator visit. Editing marks or making the form incomplete and
-complete again does not add another count during that visit. Opening a
-calculator without completing it does not count. Returning for a new visit can
-add another count: these are usage totals, not unique-student counts.
+One use is recorded the first time user changes produce a complete calculation
+during a calculator visit. Automatically restoring a complete draft does not
+count; editing it can count once. Further edits, resetting, or making the form
+incomplete and complete again do not add another count during that visit.
+Opening a calculator without completing it does not count. These are usage
+totals, not unique-student counts.
 
 The counter only sends the course (`cs` or `se`) and a random event ID. It does
 not send marks, module choices, names, emails, or student IDs. Redis stores two
