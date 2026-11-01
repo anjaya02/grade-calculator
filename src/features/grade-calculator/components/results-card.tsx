@@ -73,7 +73,7 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
           </p>
           <output
             aria-label={results ? "Rounded indicator score" : "No score yet"}
-            className={`font-score flex gap-1 leading-none tabular-nums tracking-[-0.055em] ${results ? "items-baseline text-[6.5rem] font-extrabold" : "items-center text-[3.5rem] font-medium text-[#bdceba]"}`}
+            className={`font-score flex gap-1 leading-none tabular-nums tracking-normal ${results ? "items-baseline text-[6.5rem] font-extrabold" : "items-center text-[3.5rem] font-medium text-[#bdceba]"}`}
           >
             <span>{results ? results.roundedIndicatorScore : "—"}</span>
             <span
