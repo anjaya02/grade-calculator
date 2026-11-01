@@ -40,7 +40,7 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
       className="scroll-mt-24 overflow-hidden rounded-lg border border-[#c7d3c3] bg-white"
     >
       <div className="bg-[#234333] px-6 pb-7 pt-6 text-white">
-        <div className="mb-7 flex flex-wrap items-center justify-between gap-x-3 gap-y-3">
+        <div className="mb-6 flex flex-wrap items-center justify-between gap-x-3 gap-y-3">
           <h2
             id="results-heading"
             className="text-[10px] font-medium uppercase tracking-[0.13em] text-[#d0dfd0]"
@@ -68,20 +68,22 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
           </span>
         </div>
         <div aria-live="polite" aria-atomic="true">
-          <p className="mb-1 text-[11px] text-[#c4d4c4]">
+          <p className="mb-3 text-[11px] text-[#c4d4c4]">
             Weighted indicator score
           </p>
           <output
-            aria-label="Rounded indicator score"
-            className="font-score flex items-baseline gap-1 text-[6.5rem] font-extrabold leading-none tabular-nums tracking-[-0.055em]"
+            aria-label={results ? "Rounded indicator score" : "No score yet"}
+            className={`font-score flex gap-1 leading-none tabular-nums tracking-[-0.055em] ${results ? "items-baseline text-[6.5rem] font-extrabold" : "items-center text-[3.5rem] font-medium text-[#bdceba]"}`}
           >
-            {results ? results.roundedIndicatorScore : "—"}
-            <span className="ml-1 font-sans text-[1.75rem] font-normal tracking-[-0.03em] text-[#bdceba]">
+            <span>{results ? results.roundedIndicatorScore : "—"}</span>
+            <span
+              className={`ml-1 font-sans font-normal tracking-[-0.03em] text-[#bdceba] ${results ? "text-[1.75rem]" : "text-xl"}`}
+            >
               %
             </span>
           </output>
           <p
-            className={`mt-3 text-balance font-display text-[1.625rem] font-bold uppercase leading-[1.1] tracking-[-0.01em] ${hasFailedModules ? "text-[#f1d4b1]" : ""}`}
+            className={`mt-3 text-balance font-display font-bold uppercase leading-[1.1] tracking-[-0.01em] ${results ? "text-[1.625rem]" : "text-[1.375rem]"} ${hasFailedModules ? "text-[#f1d4b1]" : ""}`}
           >
             {classification?.label ?? "Your result starts here."}
           </p>
