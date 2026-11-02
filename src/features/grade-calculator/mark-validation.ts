@@ -1,6 +1,3 @@
-export const MARK_INPUT_ERROR =
-  "Enter a mark from 0 to 100 with up to 2 decimal places.";
-
 // null clears a mark; undefined rejects the edit. A lone decimal point is
 // allowed while typing, but does not count as an entered mark.
 export function parseMarkInput(value: string): number | null | undefined {

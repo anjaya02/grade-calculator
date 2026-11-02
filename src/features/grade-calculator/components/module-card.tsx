@@ -40,7 +40,7 @@ export function ModuleCard({
 
   return (
     <div
-      className={`flex flex-wrap items-center gap-2.5 rounded-lg border p-2.5 transition-colors ${!isCore && selected ? calculatorThemes[theme].optionalModule : "border-transparent"} ${disabled ? "text-muted-foreground" : ""}`}
+      className={`flex items-center gap-2.5 rounded-lg border p-2.5 transition-colors ${!isCore && selected ? calculatorThemes[theme].optionalModule : "border-transparent"} ${disabled ? "text-muted-foreground" : ""}`}
     >
       {!isCore && (
         <Checkbox
