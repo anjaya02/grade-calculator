@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 import { Input } from "@/components/ui/input";
-import { parseMarkInput } from "../mark-validation";
+import { normalizeMarkInput, parseMarkInput } from "../mark-validation";
 
 type MarkInputProps = {
   id: string;
@@ -27,8 +27,9 @@ export function MarkInput({ id, mark, onMarkChange }: MarkInputProps) {
           const nextValue = event.target.value;
           const parsed = parseMarkInput(nextValue);
           if (parsed === undefined) return;
-          setInput({ mark: parsed ?? undefined, value: nextValue });
-          onMarkChange(nextValue);
+          const normalizedValue = normalizeMarkInput(nextValue);
+          setInput({ mark: parsed ?? undefined, value: normalizedValue });
+          onMarkChange(normalizedValue);
         }}
         onBlur={() => {
           setInput({ mark, value: String(mark ?? "") });

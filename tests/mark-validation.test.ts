@@ -1,6 +1,16 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { parseMarkInput } from "../src/features/grade-calculator/mark-validation";
+import { normalizeMarkInput, parseMarkInput } from "../src/features/grade-calculator/mark-validation";
+
+test("removes repeated leading zeroes while preserving decimal edits", () => {
+  for (const [input, expected] of [
+    ["00000", "0"], ["00", "0"], ["082.34", "82.34"],
+    ["000.05", "0.05"], ["0.05", "0.05"], ["0.00", "0.00"],
+    ["0.", "0."], ["82.0", "82.0"], ["", ""], [".", "."],
+  ]) {
+    assert.equal(normalizeMarkInput(input), expected, input);
+  }
+});
 
 test("accepts marks from 0 to 100 with at most two decimal places", () => {
   for (const value of ["0", "0.00", "0.01", ".5", "82", "82.3", "82.34", "82.04", "99.99", "100", "100.00"]) {
