@@ -50,6 +50,30 @@ test("complete calculations roundtrip for both course configurations", () => {
   }
 });
 
+test("legacy overprecise marks need re-entry while other marks and selections survive", () => {
+  for (const config of [computerScienceConfig, softwareEngineeringConfig]) {
+    const state = createEmptyCalculatorState();
+    for (const level of ["l5", "l6"] as const) {
+      state[level].coreMarks[config.modules[level].core[0].id] = 82.345484849;
+      state[level].coreMarks[config.modules[level].core[1].id] = 82.34;
+      const optional = config.modules[level].optional[0].id;
+      const custom = `OTHER-${level.toUpperCase()}-1`;
+      state[level].otherModules.push({ id: custom, name: "Custom", credits: 20, isOther: true });
+      const selected = level === "l5" ? optional : custom;
+      state[level].selectedOptionals = new Set([selected]);
+      state[level].optionalMarks = { [selected]: level === "l5" ? 39.999 : 0.001 };
+    }
+    const restored = parseCalculatorDraft(serializeCalculatorDraft(config, state), config);
+    assert.ok(restored);
+    for (const level of ["l5", "l6"] as const) {
+      assert.deepEqual(restored[level].coreMarks, { [config.modules[level].core[1].id]: 82.34 });
+      assert.deepEqual(restored[level].optionalMarks, {});
+      assert.deepEqual(restored[level].selectedOptionals, state[level].selectedOptionals);
+      assert.deepEqual(restored[level].otherModules, state[level].otherModules);
+    }
+  }
+});
+
 test("draft keys and payloads keep courses separate", () => {
   assert.equal(getCalculatorStorageKey("cs"), "grade-calculator:draft:cs");
   assert.equal(getCalculatorStorageKey("se"), "grade-calculator:draft:se");

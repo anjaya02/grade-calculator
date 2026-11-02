@@ -1,3 +1,5 @@
+import { isValidMark } from "./marks";
+
 export type DegreeModule = {
   id: string;
   name: string;
@@ -9,7 +11,9 @@ export type DegreeModule = {
 export function calculateHonoursClassification<T extends DegreeModule>(
   modules: T[],
 ) {
-  if (modules.length === 0) return null;
+  if (modules.length === 0 || modules.some((module) => !isValidMark(module.mark))) {
+    return null;
+  }
 
   const modulesBelowPassMark = modules.filter((module) => module.mark < 40);
 

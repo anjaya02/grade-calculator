@@ -1,3 +1,5 @@
+import { isValidMark } from "@/lib/marks";
+
 export function normalizeMarkInput(value: string): string {
   return value.replace(/^0+(?=\d)/, "");
 }
@@ -11,5 +13,5 @@ export function parseMarkInput(value: string): number | null | undefined {
   if (value === "" || value === ".") return null;
 
   const mark = Number(value);
-  return mark >= 0 && mark <= 100 ? mark : undefined;
+  return isValidMark(mark) ? mark : undefined;
 }

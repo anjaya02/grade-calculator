@@ -1,4 +1,5 @@
 import type { UsageCourse } from "@/lib/usage";
+import { isValidMark } from "@/lib/marks";
 import type {
   CalculatorState,
   CourseConfig,
@@ -87,7 +88,9 @@ function parseMarks(value: unknown, allowedIds: Set<string>): Marks | null {
     ) {
       return null;
     }
-    marks[id] = mark;
+    // Older drafts allowed arbitrary precision. Keep the rest of the draft
+    // and require re-entry of these marks instead of silently rounding them.
+    if (isValidMark(mark)) marks[id] = mark;
   }
   return marks;
 }

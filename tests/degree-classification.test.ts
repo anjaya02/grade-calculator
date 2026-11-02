@@ -51,6 +51,16 @@ test("no result is produced without any modules or without Level 6 credits", () 
   );
 });
 
+test("invalid marks never produce a classification, even if they would be disregarded", () => {
+  for (const mark of [NaN, Infinity, -Infinity, -0.01, 100.01, 82.345, 39.999]) {
+    for (const index of [0, 6]) {
+      const modules = uniformDegree(75);
+      modules[index].mark = mark;
+      assert.equal(calculateHonoursClassification(modules), null, `${index}: ${mark}`);
+    }
+  }
+});
+
 test("disregards the lowest Level 5 module and weights the remaining levels one-third/two-thirds", () => {
   const result = calculate(degree([40, 60, 70, 80, 90, 100], [75, 75, 75, 75, 75]));
 
