@@ -1,10 +1,10 @@
 import { X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { calculatorThemes } from "../theme";
 import type { CourseConfig, CourseModule, LevelId, ModuleType } from "../types";
+import { MarkInput } from "./mark-input";
 
 type ModuleCardProps = {
   module: CourseModule;
@@ -40,7 +40,7 @@ export function ModuleCard({
 
   return (
     <div
-      className={`flex items-center gap-2.5 rounded-lg border p-2.5 transition-colors ${!isCore && selected ? calculatorThemes[theme].optionalModule : "border-transparent"} ${disabled ? "text-muted-foreground" : ""}`}
+      className={`flex flex-wrap items-center gap-2.5 rounded-lg border p-2.5 transition-colors ${!isCore && selected ? calculatorThemes[theme].optionalModule : "border-transparent"} ${disabled ? "text-muted-foreground" : ""}`}
     >
       {!isCore && (
         <Checkbox
@@ -86,34 +86,16 @@ export function ModuleCard({
         </p>
       </div>
       {(isCore || selected) && (
-        <div className="relative w-[5.5rem] shrink-0">
+        <>
           <Label htmlFor={inputId} className="sr-only">
             {module.name} mark (%)
           </Label>
-          <Input
+          <MarkInput
             id={inputId}
-            type="number"
-            inputMode="decimal"
-            step="any"
-            min={0}
-            max={100}
-            placeholder="—"
-            value={mark ?? ""}
-            onChange={(event) => onMarkChange(event.target.value)}
-            onKeyDown={(event) => {
-              if (event.key === "ArrowUp" || event.key === "ArrowDown")
-                event.preventDefault();
-            }}
-            onWheel={(event) => event.currentTarget.blur()}
-            className="h-11 rounded-md border-input bg-white pl-2 pr-5 text-right text-base font-medium tabular-nums shadow-none focus-visible:ring-2 md:text-sm"
+            mark={mark}
+            onMarkChange={onMarkChange}
           />
-          <span
-            aria-hidden="true"
-            className="pointer-events-none absolute right-2 top-1/2 -translate-y-1/2 text-[10px] text-muted-foreground"
-          >
-            %
-          </span>
-        </div>
+        </>
       )}
     </div>
   );

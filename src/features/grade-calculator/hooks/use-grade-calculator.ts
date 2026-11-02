@@ -20,6 +20,7 @@ import type {
   ModuleType,
   OtherModule,
 } from "../types";
+import { parseMarkInput } from "../mark-validation";
 
 type LevelAction =
   | {
@@ -85,16 +86,15 @@ function calculatorReducer(
       const marksKey =
         action.moduleType === "core" ? "coreMarks" : "optionalMarks";
       const marks = { ...levelState[marksKey] };
-      const value = Number.parseFloat(action.value);
+      const value = parseMarkInput(action.value);
 
-      if (!Number.isNaN(value) && value >= 0 && value <= 100) {
+      if (value === undefined) return state;
+      if (value !== null) {
         if (marks[action.moduleId] === value) return state;
         marks[action.moduleId] = value;
-      } else if (action.value === "") {
+      } else {
         if (marks[action.moduleId] === undefined) return state;
         delete marks[action.moduleId];
-      } else {
-        return state;
       }
 
       return updateLevel(state, action.level, { [marksKey]: marks });

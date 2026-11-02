@@ -33,7 +33,8 @@ export function GradeCalculator({ config }: GradeCalculatorProps) {
           </h1>
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
             Select your optional modules and enter your marks. Your weighted
-            result updates as soon as every required mark is in.
+            result updates as soon as every required mark is in. Enter marks from
+            0 to 100 with up to 2 decimal places.
           </p>
           <DraftControls controller={controller} />
         </div>
