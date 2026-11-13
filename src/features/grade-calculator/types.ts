@@ -10,6 +10,9 @@ export type CourseModule = {
   name: string;
   credits: number;
   mandatory?: boolean;
+  previousName?: string;
+  legacyIds?: readonly string[];
+  earlierCohortsOnly?: boolean;
 };
 
 export type OtherModule = CourseModule & {

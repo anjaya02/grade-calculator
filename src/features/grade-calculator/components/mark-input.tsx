@@ -9,9 +9,10 @@ type MarkInputProps = {
   id: string;
   mark?: Mark;
   onMarkChange: (value: string) => void;
+  descriptionId?: string;
 };
 
-export function MarkInput({ id, mark, onMarkChange }: MarkInputProps) {
+export function MarkInput({ id, mark, onMarkChange, descriptionId }: MarkInputProps) {
   // Keep the typed text so decimal points and trailing zeroes survive updates.
   const [input, setInput] = useState({
     mark, value: String(mark ?? ""), invalid: false,
@@ -29,7 +30,7 @@ export function MarkInput({ id, mark, onMarkChange }: MarkInputProps) {
           placeholder="—"
           value={value}
           aria-invalid={invalid || undefined}
-          aria-describedby={invalid ? `${id}-error` : undefined}
+          aria-describedby={[descriptionId, invalid ? `${id}-error` : null].filter(Boolean).join(" ") || undefined}
           title={value}
           onChange={(event) => {
             const nextValue = event.target.value;

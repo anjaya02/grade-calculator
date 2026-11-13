@@ -38,6 +38,12 @@ export function ModuleCard({
   const titleId = `module-${level}-${module.id}`;
   const checkboxId = `optional-${level}-${module.id}`;
   const inputId = `mark-${level}-${module.id}`;
+  const previousNameId = `${titleId}-previous`;
+  const availabilityId = `${titleId}-availability`;
+  const descriptionId = [
+    module.previousName ? previousNameId : null,
+    module.earlierCohortsOnly ? availabilityId : null,
+  ].filter(Boolean).join(" ") || undefined;
 
   return (
     <div
@@ -49,6 +55,7 @@ export function ModuleCard({
           checked={selected}
           disabled={disabled}
           aria-labelledby={titleId}
+          aria-describedby={descriptionId}
           onCheckedChange={(checked) => onOptionalToggle(checked === true)}
           className="size-[17px] shrink-0 rounded-[5px]"
         />
@@ -69,10 +76,23 @@ export function ModuleCard({
             </label>
           )}
         </h4>
+        {module.previousName && (
+          <p id={previousNameId}
+            className="mt-0.5 text-[11px] leading-4 text-muted-foreground [overflow-wrap:anywhere]">
+            {isCore ? `Previously ${module.previousName}` : (
+              <label htmlFor={checkboxId} className={disabled ? "cursor-default" : "cursor-pointer"}>
+                Previously {module.previousName}
+              </label>
+            )}
+          </p>
+        )}
         <p className="mt-1 flex flex-wrap items-center gap-x-1.5 font-mono text-[9px] leading-4 tracking-[-0.015em] text-muted-foreground">
           <span>{isOtherModule ? "CUSTOM" : module.id}</span>
           <span aria-hidden="true">·</span>
           <span className="whitespace-nowrap">{module.credits} credits</span>
+          {module.earlierCohortsOnly && (
+            <span id={availabilityId} className="font-sans">· Earlier cohorts</span>
+          )}
           {isOtherModule && (
             <Button
               variant="ghost"
@@ -94,6 +114,7 @@ export function ModuleCard({
           <MarkInput
             id={inputId}
             mark={mark}
+            descriptionId={descriptionId}
             onMarkChange={onMarkChange}
           />
         </>

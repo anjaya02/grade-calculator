@@ -108,7 +108,7 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
                   title={results.l5AverageDisplay === null ? undefined : `${results.l5AverageDisplay}%`}>
                   {results.l5AverageSummary !== null
                     ? `${results.l5AverageSummary}%`
-                    : "Not used"}
+                    : <span className="text-base">Not used</span>}
                   <span className="mt-1 block whitespace-normal text-[10px] font-normal tracking-normal text-muted-foreground">
                     {controller.level6Only ? "Recognised credit" : "⅓ of the indicator"}
                   </span>

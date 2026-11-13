@@ -8,6 +8,7 @@ import {
   getCalculatorStorageKey,
   hasCalculatorDraft,
   parseCalculatorDraft,
+  restoreCalculatorDraft,
   serializeCalculatorDraft,
 } from "../src/features/grade-calculator/draft-storage";
 import type { CalculatorState, CourseConfig } from "../src/features/grade-calculator/types";
@@ -34,6 +35,74 @@ test("roundtrips partial marks including zero and decimals, selections, and cust
   assert.equal(serialized.course, "cs");
   assert.equal(new Date(serialized.updatedAt).toISOString(), serialized.updatedAt);
   assert.deepEqual(serialized.levels.l5.selectedOptionals, ["5SENG003C"]);
+});
+
+test("every legacy code migrates without losing precise marks or unrelated entries", () => {
+  for (const config of [computerScienceConfig, softwareEngineeringConfig] as CourseConfig[]) {
+    for (const level of ["l5", "l6"] as const) {
+      for (const kind of ["core", "optional"] as const) {
+        for (const courseModule of config.modules[level][kind]) {
+          for (const alias of courseModule.legacyIds ?? []) {
+            for (const version of [1, CALCULATOR_STORAGE_VERSION]) {
+              const value = draft(config);
+              value.version = version;
+              const stableId = config.modules.l5.core.find((item) => item.id !== courseModule.id)!.id;
+              value.levels.l5.coreMarks[stableId] = "81.2345";
+              const marksKey = kind === "core" ? "coreMarks" : "optionalMarks";
+              const mark = "70.660000000000000000000001";
+              value.levels[level][marksKey][alias] = mark;
+              if (kind === "optional") value.levels[level].selectedOptionals = [alias];
+              const restored = restoreCalculatorDraft(JSON.stringify(value), config);
+              assert.ok(restored, `${config.id}: ${alias}`);
+              assert.equal(restored.needsReview, false);
+              assert.equal(restored.state.l5.coreMarks[stableId], "81.2345");
+              assert.equal(restored.state[level][marksKey][courseModule.id], mark);
+              assert.equal(restored.state[level][marksKey][alias], undefined);
+              if (kind === "optional") assert.deepEqual([...restored.state[level].selectedOptionals], [courseModule.id]);
+              assert.deepEqual(parseCalculatorDraft(serializeCalculatorDraft(config, restored.state), config), restored.state);
+            }
+          }
+        }
+      }
+    }
+  }
+});
+
+test("duplicate media selections collapse to one choice and flag a review", () => {
+  const value = draft();
+  value.levels.l6.selectedOptionals = ["6MMCS006C", "6MMCS008C"];
+  value.levels.l6.optionalMarks = { "6MMCS006C": 70.66, "6MMCS008C": "70.660" };
+  const restored = restoreCalculatorDraft(JSON.stringify(value), computerScienceConfig);
+  assert.ok(restored?.needsReview);
+  assert.deepEqual([...restored.state.l6.selectedOptionals], ["6MMCS008C"]);
+  assert.equal(Number(restored.state.l6.optionalMarks["6MMCS008C"]), 70.66);
+});
+
+test("conflicting duplicate marks require re-entry while other marks survive", () => {
+  for (const order of [["6MMCS006C", "6MMCS008C"], ["6MMCS008C", "6MMCS006C"]]) {
+    const value = draft();
+    value.levels.l5.coreMarks["5COSC021C"] = "81.2345";
+    value.levels.l5.selectedOptionals = ["5BUIS020C"];
+    value.levels.l5.optionalMarks = { "5BUIS020C": "65" };
+    value.levels.l6.coreMarks["6COSC023C"] = "76.54321";
+    value.levels.l6.selectedOptionals = order;
+    value.levels.l6.optionalMarks = { [order[0]]: "60", [order[1]]: "90" };
+    const restored = restoreCalculatorDraft(JSON.stringify(value), computerScienceConfig);
+    assert.ok(restored?.needsReview);
+    assert.deepEqual(restored.state.l6.optionalMarks, {});
+    assert.deepEqual([...restored.state.l6.selectedOptionals], ["6MMCS008C"]);
+    assert.equal(restored.state.l5.coreMarks["5COSC021C"], "81.2345");
+    assert.equal(restored.state.l5.optionalMarks["5BUIS020C"], "65");
+    assert.equal(restored.state.l6.coreMarks["6COSC023C"], "76.54321");
+  }
+});
+
+test("core alias conflicts withhold only the conflicting module mark", () => {
+  const value = draft(softwareEngineeringConfig);
+  value.levels.l6.coreMarks = { "6COSC019C": "60", "6COSC019C.2": "90", "6COSC023C.Y": "80" };
+  const restored = restoreCalculatorDraft(JSON.stringify(value), softwareEngineeringConfig);
+  assert.ok(restored?.needsReview);
+  assert.deepEqual(restored.state.l6.coreMarks, { "6COSC023C": "80" });
 });
 
 test("complete calculations roundtrip for both course configurations", () => {

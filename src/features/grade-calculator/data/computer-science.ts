@@ -29,7 +29,8 @@ export const computerScienceConfig = {
         },
         {
           id: "5COSC021C",
-          name: "Software Development Group Project (SDGP)",
+          name: "Agile Team Project (ATP)",
+          previousName: "Software Development Group Project (SDGP)",
           credits: 20,
           mandatory: true,
         },
@@ -47,7 +48,8 @@ export const computerScienceConfig = {
         },
         {
           id: "5COSC024C",
-          name: "Server-side Web Development",
+          name: "Back-end Web Development",
+          previousName: "Server-side Web Development",
           credits: 20,
         },
         { id: "5COSC025C", name: "HCI & User Experience", credits: 20 },
@@ -64,16 +66,19 @@ export const computerScienceConfig = {
         {
           id: "5BUIS020C",
           name: "Information Technology Security",
+          earlierCohortsOnly: true,
           credits: 20,
         },
         {
           id: "5SENG003C",
-          name: "Algorithms: Theory, Design and Implementation",
+          name: "Data Structures and Algorithms",
+          previousName: "Algorithms: Theory, Design and Implementation",
           credits: 20,
         },
         {
           id: "5DATA001C",
-          name: "Machine Learning and Data Mining",
+          name: "Practical Machine Learning",
+          previousName: "Machine Learning and Data Mining",
           credits: 20,
         },
         { id: "5CCGD011C", name: "Game Engine Architecture", credits: 20 },
@@ -83,14 +88,17 @@ export const computerScienceConfig = {
           credits: 20,
         },
         { id: "5ELEN018C", name: "Robotic Principles", credits: 20 },
-        { id: "5ELEN018C-2", name: "Sensors & Signals", credits: 20 },
+        {
+          id: "5ELEN021C", name: "Sensors & Signals", credits: 20,
+          legacyIds: ["5ELEN018C-2"],
+        },
       ],
     },
     l6: {
       core: [
         {
           id: "6COSC023C",
-          name: "Final Year Project (FYP)",
+          name: "Computer Science Final Year Project (FYP)",
           credits: 40,
           mandatory: true,
         },
@@ -110,12 +118,14 @@ export const computerScienceConfig = {
       optional: [
         {
           id: "6COSC021C",
-          name: "Mobile Native Application Development",
+          name: "iOS Application Development",
+          previousName: "Mobile Native Application Development",
           credits: 20,
         },
         {
           id: "6COSC022C",
-          name: "Advanced Server-side Web Programming",
+          name: "Distributed Systems and DevOps Engineering",
+          previousName: "Advanced Server-side Web Programming",
           credits: 20,
         },
         {
@@ -126,6 +136,7 @@ export const computerScienceConfig = {
         {
           id: "6MMCS008C",
           name: "Advanced Interactive Media Development",
+          legacyIds: ["6MMCS006C"],
           credits: 20,
         },
         {
@@ -135,7 +146,8 @@ export const computerScienceConfig = {
         },
         {
           id: "6BUIS019C",
-          name: "Strategic Management of Information Systems",
+          name: "Digital Strategy",
+          previousName: "Strategic Management of Information Systems",
           credits: 20,
         },
         {
@@ -148,14 +160,15 @@ export const computerScienceConfig = {
           name: "Operational Research and Optimisation",
           credits: 20,
         },
-        { id: "6CCGD002C", name: "Game AI", credits: 20 },
         {
-          id: "6MMCS006C",
-          name: "Advanced Interactive Media Development",
-          credits: 20,
+          id: "6CCGD007C", name: "Game AI", credits: 20,
+          legacyIds: ["6CCGD002C"],
         },
         { id: "6ELEN018C", name: "Applied Robotics", credits: 20 },
-        { id: "6NTCM009W", name: "Internet of Things", credits: 20 },
+        {
+          id: "6NTCM009C", name: "Internet of Things", credits: 20,
+          legacyIds: ["6NTCM009W"],
+        },
       ],
     },
   },

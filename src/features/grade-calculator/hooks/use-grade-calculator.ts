@@ -9,7 +9,7 @@ import {
   createEmptyCalculatorState,
   getCalculatorStorageKey,
   hasCalculatorDraft,
-  parseCalculatorDraft,
+  restoreCalculatorDraft,
   serializeCalculatorDraft,
 } from "../draft-storage";
 import type {
@@ -60,6 +60,7 @@ export type DraftStorageStatus =
   | "ready"
   | "saved"
   | "invalid"
+  | "needs-review"
   | "unavailable"
   | "reset-error";
 
@@ -282,10 +283,10 @@ export function useGradeCalculator(config: CourseConfig) {
       const key = getCalculatorStorageKey(config.id);
       const raw = window.localStorage.getItem(key);
       if (raw !== null) {
-        const saved = parseCalculatorDraft(raw, config);
+        const saved = restoreCalculatorDraft(raw, config);
         if (saved) {
-          restored = saved;
-          status = hasCalculatorDraft(saved) ? "saved" : "ready";
+          restored = saved.state;
+          status = saved.needsReview ? "needs-review" : hasCalculatorDraft(restored) ? "saved" : "ready";
         } else {
           window.localStorage.removeItem(key);
           status = "invalid";

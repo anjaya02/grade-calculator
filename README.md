@@ -14,6 +14,7 @@ Built with **Next.js**, **TypeScript**, **Tailwind CSS**, and **shadcn/ui** for 
 - 📌 Compares both credit-drop options under the Westminster 2026–27 rules
 - 🔢 Preserves decimal marks and rounds the final result with exact arithmetic
 - 📚 Supports recognised Level 5 credit with no Level 5 marks
+- 🏷️ Current module names with visible previous names for earlier cohorts
 - 📎 SE & CS pathways supported
 - 📱 Mobile-responsive UI
 - 🌈 Clean, colorful UI with intuitive design
@@ -43,6 +44,23 @@ marks and current course configuration. Version 2 preserves version 1 numeric
 marks, stores new marks as decimal strings, and saves the recognised-credit
 choice. Existing marks are recalculated using the 2026–27 rules. A future
 incompatible schema change must also review the explicit version 1 migration.
+
+Module labels use the supplied 2026–27 CS and SE lists. Renamed modules show
+the current title first and the previous title on a smaller line underneath,
+including on phones. Both names remain visible without opening a tooltip.
+The previous-name line on an optional module also selects that module.
+Information Technology Security remains available for earlier CS cohorts and
+is labelled accordingly. XR and Advanced Interactive Media Development each
+appear once; Professional Development, placement, and the not-offered
+Networked Games and Security module are excluded.
+
+Displayed built-in module codes use the IIT `C` convention. Saved drafts migrate
+the corrected Sensors & Signals, Game AI, Internet of Things and former SE
+suffix codes automatically. The duplicate media-module code maps to
+`6MMCS008C`, so it cannot count twice. If old duplicate entries disagree, only
+that mark is cleared for re-entry; other marks survive. A review message and
+the incomplete form indicate which choices still need attention. A normal
+code/name migration keeps the marks and existing course separation.
 
 ---
 

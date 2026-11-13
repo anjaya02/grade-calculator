@@ -1,8 +1,9 @@
 import type { UsageCourse } from "@/lib/usage";
-import { isValidMark } from "@/lib/marks";
+import { isValidMark, normalizeMark } from "@/lib/marks";
 import type {
   CalculatorState,
   CourseConfig,
+  CourseModule,
   LevelId,
   LevelState,
   Marks,
@@ -75,24 +76,44 @@ function isRecord(value: unknown): value is Record<string, unknown> {
   return typeof value === "object" && value !== null && !Array.isArray(value);
 }
 
-function parseMarks(value: unknown, allowedIds: Set<string>): Marks | null {
+function moduleIdMap(modules: readonly CourseModule[]): Map<string, string> {
+  const ids = new Map<string, string>();
+  for (const courseModule of modules) {
+    ids.set(courseModule.id, courseModule.id);
+    for (const legacyId of courseModule.legacyIds ?? []) ids.set(legacyId, courseModule.id);
+  }
+  return ids;
+}
+
+function parseMarks(value: unknown, allowedIds: Set<string>, ids: Map<string, string>) {
   if (!isRecord(value)) return null;
 
   const marks: Marks = {};
+  const conflicts = new Set<string>();
   for (const [id, mark] of Object.entries(value)) {
     if (!allowedIds.has(id) || !isValidMark(mark)) return null;
+    const canonicalId = ids.get(id);
+    if (!canonicalId) return null;
     // Retain numeric legacy marks without rounding them. New marks are decimal
     // strings, including any digits that would be lost by a Number conversion.
-    marks[id] = mark;
+    if (conflicts.has(canonicalId)) continue;
+    if (marks[canonicalId] !== undefined && normalizeMark(marks[canonicalId]) !== normalizeMark(mark)) {
+      // Aliases can reveal two old entries for one module. A conflicting mark
+      // needs re-entry; choosing either value would invent a student's result.
+      delete marks[canonicalId];
+      conflicts.add(canonicalId);
+    } else {
+      marks[canonicalId] = mark;
+    }
   }
-  return marks;
+  return { marks, needsReview: conflicts.size > 0 };
 }
 
 function parseLevel(
   value: unknown,
   config: CourseConfig,
   level: LevelId,
-): LevelState | null {
+) {
   if (
     !isRecord(value) ||
     !Array.isArray(value.selectedOptionals) ||
@@ -102,10 +123,8 @@ function parseLevel(
     return null;
   }
 
-  const coreIds = new Set(config.modules[level].core.map((module) => module.id));
-  const optionalIds = new Set(
-    config.modules[level].optional.map((module) => module.id),
-  );
+  const coreIds = moduleIdMap(config.modules[level].core);
+  const optionalIds = moduleIdMap(config.modules[level].optional);
   const otherModules: OtherModule[] = [];
   const otherIdPattern = new RegExp(`^OTHER-${level.toUpperCase()}-[0-9]+$`);
 
@@ -123,7 +142,7 @@ function parseLevel(
     ) {
       return null;
     }
-    optionalIds.add(customModule.id);
+    optionalIds.set(customModule.id, customModule.id);
     otherModules.push({
       id: customModule.id,
       name: customModule.name.trim(),
@@ -133,35 +152,43 @@ function parseLevel(
   }
 
   const selectedOptionals = new Set<string>();
+  const rawSelections = new Set<string>();
+  let needsReview = false;
   for (const id of value.selectedOptionals) {
     if (
       typeof id !== "string" ||
       !optionalIds.has(id) ||
-      selectedOptionals.has(id)
+      rawSelections.has(id)
     ) {
       return null;
     }
-    selectedOptionals.add(id);
+    rawSelections.add(id);
+    const canonicalId = optionalIds.get(id)!;
+    if (selectedOptionals.has(canonicalId)) needsReview = true;
+    selectedOptionals.add(canonicalId);
   }
 
-  const coreMarks = parseMarks(value.coreMarks, coreIds);
-  const optionalMarks = parseMarks(value.optionalMarks, selectedOptionals);
+  const coreMarks = parseMarks(value.coreMarks, new Set(coreIds.keys()), coreIds);
+  const optionalMarks = parseMarks(value.optionalMarks, rawSelections, optionalIds);
   if (!coreMarks || !optionalMarks) return null;
 
   return {
-    coreMarks,
-    optionalMarks,
-    selectedOptionals,
-    otherModules,
-    showAddForm: false,
-    newModuleName: "",
+    state: {
+      coreMarks: coreMarks.marks,
+      optionalMarks: optionalMarks.marks,
+      selectedOptionals,
+      otherModules,
+      showAddForm: false,
+      newModuleName: "",
+    } satisfies LevelState,
+    needsReview: needsReview || coreMarks.needsReview || optionalMarks.needsReview,
   };
 }
 
-export function parseCalculatorDraft(
+export function restoreCalculatorDraft(
   raw: string,
   config: CourseConfig,
-): CalculatorState | null {
+) {
   try {
     if (raw.length > MAX_DRAFT_LENGTH) return null;
     const value: unknown = JSON.parse(raw);
@@ -179,8 +206,19 @@ export function parseCalculatorDraft(
 
     const l5 = parseLevel(value.levels.l5, config, "l5");
     const l6 = parseLevel(value.levels.l6, config, "l6");
-    return l5 && l6 ? { l5, l6, level6Only: value.version === 1 ? false : value.level6Only as boolean } : null;
+    if (!l5 || !l6) return null;
+    return {
+      state: {
+        l5: l5.state, l6: l6.state,
+        level6Only: value.version === 1 ? false : value.level6Only as boolean,
+      } satisfies CalculatorState,
+      needsReview: l5.needsReview || l6.needsReview,
+    };
   } catch {
     return null;
   }
+}
+
+export function parseCalculatorDraft(raw: string, config: CourseConfig): CalculatorState | null {
+  return restoreCalculatorDraft(raw, config)?.state ?? null;
 }

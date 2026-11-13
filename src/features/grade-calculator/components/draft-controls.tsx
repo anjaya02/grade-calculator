@@ -13,6 +13,7 @@ const storageMessages: Record<DraftStorageStatus, string> = {
   ready: "Your marks save automatically on this browser.",
   saved: "Saved on this browser.",
   invalid: "Saved marks were outdated or invalid. Start a new calculation.",
+  "needs-review": "Some saved module entries overlapped. Review your optional choices and re-enter any blank marks.",
   unavailable: "Autosave unavailable. Keep this page open to retain your marks.",
   "reset-error": "Marks cleared here. Saved marks could not be removed.",
 };

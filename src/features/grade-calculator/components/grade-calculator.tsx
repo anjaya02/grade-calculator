@@ -17,6 +17,10 @@ type GradeCalculatorProps = { config: CourseConfig };
 
 export function GradeCalculator({ config }: GradeCalculatorProps) {
   const controller = useGradeCalculator(config);
+  const hasRenamedModules = (["l5", "l6"] as const).some((level) =>
+    [...config.modules[level].core, ...config.modules[level].optional]
+      .some((courseModule) => courseModule.previousName),
+  );
   useCalculationUsage(
     config.id,
     controller.hasUserChanges && controller.results !== null,
@@ -38,6 +42,12 @@ export function GradeCalculator({ config }: GradeCalculatorProps) {
             result updates as soon as every required mark is in. Enter marks from
             0 to 100, including all recorded decimal places.
           </p>
+          {hasRenamedModules && (
+            <p className="mt-2 text-xs leading-5 text-muted-foreground">
+              Earlier module names are shown beneath renamed modules, so you can
+              match the names on your transcript.
+            </p>
+          )}
           <p className="mt-2 text-xs text-muted-foreground">
             Westminster {HONOURS_REGULATIONS.year} Honours Degree Scheme. Enter final
             module marks, including any referral or retake adjustments.
