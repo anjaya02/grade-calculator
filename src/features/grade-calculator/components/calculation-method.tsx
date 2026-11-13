@@ -1,4 +1,4 @@
-import { ChevronDown } from "lucide-react";
+import { ArrowUpRight, ChevronDown } from "lucide-react";
 import { describeOptionalCount } from "../classification";
 import { HONOURS_REGULATIONS } from "@/lib/degree-classification";
 
@@ -32,8 +32,8 @@ export function CalculationMethod({
           aria-hidden="true"
         />
       </summary>
-      <div className="grid gap-7 border-t border-border py-6 lg:grid-cols-[280px_1fr] lg:gap-10">
-        <div className="self-start rounded-lg bg-[#eef1e8] p-5">
+      <div className="grid min-w-0 gap-7 border-t border-border py-6 lg:grid-cols-[280px_minmax(0,1fr)] lg:gap-10">
+        <div className="min-w-0 self-start rounded-lg bg-[#eef1e8] p-5">
           <p className="mb-4 text-[10px] font-medium uppercase tracking-[0.12em] text-muted-foreground">
             The weighted indicator
           </p>
@@ -45,12 +45,18 @@ export function CalculationMethod({
               </>
             )}
           </p>
-          <a href={HONOURS_REGULATIONS.sourceUrl} target="_blank" rel="noreferrer"
-            className="mt-4 block text-xs leading-5 underline underline-offset-4">
-            Westminster {HONOURS_REGULATIONS.year} regulations, §§4.4 and 7.3
-          </a>
+          <div className="mt-4 border-t border-border pt-3">
+            <a href={HONOURS_REGULATIONS.sourceUrl} target="_blank" rel="noreferrer"
+              className="inline-flex max-w-full items-center gap-1.5 rounded-sm text-xs leading-5 text-primary underline underline-offset-4 outline-offset-4">
+              <span className="min-w-0">View official regulations</span>
+              <ArrowUpRight className="size-3 shrink-0" aria-hidden="true" />
+            </a>
+            <p className="mt-1 text-[10px] leading-4 text-muted-foreground">
+              Westminster · {HONOURS_REGULATIONS.year}
+            </p>
+          </div>
         </div>
-        <ol className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
+        <ol className="grid min-w-0 gap-x-8 gap-y-5 sm:grid-cols-2">
           {(level6Only ? [
             "Where all Level 5 credit is recognised or transferred with no Level 5 marks, all 120 Level 6 credits count at 100%. No credits are disregarded.",
             `Choose ${describeOptionalCount(optionalModulesPerLevel)} at Level 6 and enter every final module mark.`,
@@ -58,7 +64,7 @@ export function CalculationMethod({
           ] : rules).map((rule, index) => (
             <li
               key={rule}
-              className="flex gap-3 text-xs leading-6 text-muted-foreground"
+              className="flex min-w-0 gap-3 text-xs leading-6 text-muted-foreground"
             >
               <span
                 aria-hidden="true"
@@ -66,7 +72,7 @@ export function CalculationMethod({
               >
                 0{index + 1}
               </span>
-              <span>{rule}</span>
+              <span className="min-w-0">{rule}</span>
             </li>
           ))}
         </ol>

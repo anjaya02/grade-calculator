@@ -2,7 +2,6 @@
 
 import Footer from "@/components/Footer";
 import { Checkbox } from "@/components/ui/checkbox";
-import { HONOURS_REGULATIONS } from "@/lib/degree-classification";
 import { useCalculationUsage } from "../hooks/use-calculation-usage";
 import { useGradeCalculator } from "../hooks/use-grade-calculator";
 import type { CourseConfig } from "../types";
@@ -17,10 +16,6 @@ type GradeCalculatorProps = { config: CourseConfig };
 
 export function GradeCalculator({ config }: GradeCalculatorProps) {
   const controller = useGradeCalculator(config);
-  const hasRenamedModules = (["l5", "l6"] as const).some((level) =>
-    [...config.modules[level].core, ...config.modules[level].optional]
-      .some((courseModule) => courseModule.previousName),
-  );
   useCalculationUsage(
     config.id,
     controller.hasUserChanges && controller.results !== null,
@@ -41,16 +36,6 @@ export function GradeCalculator({ config }: GradeCalculatorProps) {
             Select your optional modules and enter your marks. Your weighted
             result updates as soon as every required mark is in. Enter marks from
             0 to 100, including all recorded decimal places.
-          </p>
-          {hasRenamedModules && (
-            <p className="mt-2 text-xs leading-5 text-muted-foreground">
-              Earlier module names are shown beneath renamed modules, so you can
-              match the names on your transcript.
-            </p>
-          )}
-          <p className="mt-2 text-xs text-muted-foreground">
-            Westminster {HONOURS_REGULATIONS.year} Honours Degree Scheme. Enter final
-            module marks, including any referral or retake adjustments.
           </p>
           <div className="mt-5 max-w-xl text-xs leading-5">
             <label className="flex cursor-pointer items-start gap-2.5" htmlFor="level6-only">
