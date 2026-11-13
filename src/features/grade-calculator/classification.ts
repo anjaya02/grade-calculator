@@ -2,7 +2,7 @@ export function getClassificationBand(
   average: number,
   hasModulesBelowPassMark = false,
 ) {
-  if (hasModulesBelowPassMark || average < 40) {
+  if (hasModulesBelowPassMark || !Number.isInteger(average) || average < 40 || average > 100) {
     return {
       label: "No Honours Classification",
       background: "bg-red-100",

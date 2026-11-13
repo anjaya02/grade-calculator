@@ -13,7 +13,8 @@ type ResultsCardProps = {
 
 export function ResultsCard({ controller, config }: ResultsCardProps) {
   const { results, hasOtherModulesSelected } = controller;
-  const progress = (["l5", "l6"] as const).map((level) => {
+  const activeLevels = controller.level6Only ? ["l6"] as const : ["l5", "l6"] as const;
+  const progress = activeLevels.map((level) => {
     const state = controller.levels[level];
     const entered =
       config.modules[level].core.filter(
@@ -45,7 +46,7 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
             id="results-heading"
             className="text-[10px] font-medium uppercase tracking-[0.13em] text-[#d0dfd0]"
           >
-            Classification results
+            Estimated classification
           </h2>
           <span className="inline-flex shrink-0 items-center gap-1.5 whitespace-nowrap rounded-full border border-white/20 px-2 py-1 text-[9px] text-[#e1eadd]">
             {results ? (
@@ -89,8 +90,8 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
           </p>
           <p className="mt-3 text-[11px] leading-5 text-[#c4d4c4]">
             {results
-              ? `Rounded from an indicator of ${results.indicatorScore.toFixed(2)}%.`
-              : "A clear summary of your Level 5 and 6 marks."}
+              ? `Indicator ${results.indicatorScoreDisplay}%. Rounded once to the nearest whole number.`
+              : `A clear summary of your ${controller.level6Only ? "Level 6" : "Level 5 and 6"} marks.`}
           </p>
         </div>
       </div>
@@ -103,12 +104,13 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
                 <dt className="text-[11px] text-muted-foreground">
                   Level 5 average
                 </dt>
-                <dd className="mt-2 text-2xl font-medium tabular-nums tracking-[-0.04em]">
-                  {results.l5Average !== null
-                    ? `${results.l5Average.toFixed(1)}%`
+                <dd className="mt-2 whitespace-nowrap text-xl font-medium leading-tight tabular-nums tracking-[-0.02em] sm:text-2xl"
+                  title={results.l5AverageDisplay === null ? undefined : `${results.l5AverageDisplay}%`}>
+                  {results.l5AverageSummary !== null
+                    ? `${results.l5AverageSummary}%`
                     : "Not used"}
-                  <span className="mt-1 block text-[10px] font-normal tracking-normal text-muted-foreground">
-                    ⅓ of the indicator
+                  <span className="mt-1 block whitespace-normal text-[10px] font-normal tracking-normal text-muted-foreground">
+                    {controller.level6Only ? "Recognised credit" : "⅓ of the indicator"}
                   </span>
                 </dd>
               </div>
@@ -116,10 +118,11 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
                 <dt className="text-[11px] text-muted-foreground">
                   Level 6 average
                 </dt>
-                <dd className="mt-2 text-2xl font-medium tabular-nums tracking-[-0.04em]">
-                  {results.l6Average.toFixed(1)}%
-                  <span className="mt-1 block text-[10px] font-normal tracking-normal text-muted-foreground">
-                    ⅔ of the indicator
+                <dd className="mt-2 whitespace-nowrap text-xl font-medium leading-tight tabular-nums tracking-[-0.02em] sm:text-2xl"
+                  title={`${results.l6AverageDisplay}%`}>
+                  {results.l6AverageSummary}%
+                  <span className="mt-1 block whitespace-normal text-[10px] font-normal tracking-normal text-muted-foreground">
+                    {controller.level6Only ? "100% of the indicator" : "⅔ of the indicator"}
                   </span>
                 </dd>
               </div>
@@ -139,13 +142,31 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
                 />
               </summary>
               <dl className="mt-4 space-y-3">
+                {results.l5AverageDisplay !== null && (
+                  <ResultRow label="Level 5 average" value={`${results.l5AverageDisplay}%`} />
+                )}
+                <ResultRow label="Level 6 average" value={`${results.l6AverageDisplay}%`} />
                 <ResultRow
-                  label="Unrounded indicator"
-                  value={`${results.indicatorScore.toFixed(2)}%`}
+                  label="Indicator before final rounding"
+                  value={`${results.indicatorScoreDisplay}%`}
                 />
                 <ResultRow label="Level 5 credits" value={results.l5Credits} />
                 <ResultRow label="Level 6 credits" value={results.l6Credits} />
               </dl>
+              {results.candidates.length > 0 && (
+                <dl className="mt-4 space-y-3 border-t border-border pt-4">
+                  {results.candidates.map((candidate) => (
+                    <ResultRow key={candidate.level}
+                      label={`Drop lowest Level ${candidate.level === "l5" ? "5" : "6"} 20 credits`}
+                      value={`${candidate.indicatorScoreDisplay}%`} />
+                  ))}
+                </dl>
+              )}
+              <p className="mt-3 text-[10px] leading-5 text-muted-foreground">
+                {controller.level6Only ? "All Level 6 credits count." : "The higher of both provisional indicators is used."}
+                {" "}Summary averages marked ≈ are rounded for display. An ellipsis
+                means further decimal places; calculations use full precision.
+              </p>
               {results.disregardedModule && (
                 <div className="mt-4 rounded-lg bg-background p-3 text-[11px] leading-5">
                   <p className="font-medium">
@@ -162,8 +183,8 @@ export function ResultsCard({ controller, config }: ResultsCardProps) {
         ) : (
           <div>
             <p className="text-xs leading-6 text-muted-foreground">
-              Select {describeOptionalCount(config.optionalModulesPerLevel)} per
-              level, then enter a mark for every module.
+              Select {describeOptionalCount(config.optionalModulesPerLevel)} {controller.level6Only ? "at Level 6" : "per level"},
+              then enter a mark for every module.
             </p>
             <div className="mt-5 space-y-4">
               {progress.map(({ level, entered, total }) => (
@@ -232,8 +253,8 @@ function ResultRow({
   value: string | number;
 }) {
   return (
-    <div className="flex flex-wrap items-baseline justify-between gap-x-4 gap-y-1 text-[11px]">
-      <dt className="text-muted-foreground">{label}</dt>
+    <div className="flex items-start justify-between gap-4 text-[11px]">
+      <dt className="min-w-0 flex-1 text-muted-foreground">{label}</dt>
       <dd className="shrink-0 whitespace-nowrap font-medium tabular-nums">
         {value}
       </dd>

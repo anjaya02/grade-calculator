@@ -11,7 +11,9 @@ Built with **Next.js**, **TypeScript**, **Tailwind CSS**, and **shadcn/ui** for 
 - 🎯 Calculate degree classification (First Class, Second Upper, etc.)
 - 📊 Weighted calculation using Level 5 and Level 6 module results
 - 🔄 Uses the best 220 credits across Levels 5 and 6
-- 📌 Correctly handles 40-credit modules and cross-level ties
+- 📌 Compares both credit-drop options under the Westminster 2026–27 rules
+- 🔢 Preserves decimal marks and rounds the final result with exact arithmetic
+- 📚 Supports recognised Level 5 credit with no Level 5 marks
 - 📎 SE & CS pathways supported
 - 📱 Mobile-responsive UI
 - 🌈 Clean, colorful UI with intuitive design
@@ -37,7 +39,10 @@ Drafts carry a storage version; bump `CALCULATOR_STORAGE_VERSION` in
 `src/features/grade-calculator/draft-storage.ts` when a major schema or regulation
 change makes earlier drafts incompatible. Transient custom-module form text and
 calculated results are not persisted; results are recalculated from the restored
-marks and current course configuration.
+marks and current course configuration. Version 2 preserves version 1 numeric
+marks, stores new marks as decimal strings, and saves the recognised-credit
+choice. Existing marks are recalculated using the 2026–27 rules. A future
+incompatible schema change must also review the explicit version 1 migration.
 
 ---
 
@@ -93,14 +98,68 @@ this public, anonymous counter is not a verified or abuse-proof audit metric.
 
 Indicator Score = (1/3 × Level 5 Average) + (2/3 × Level 6 Average)
 
-````
+```
 
-- Only Level 5 and Level 6 credits are used
-- The lowest-mark module is disregarded from the best 220 credits
-- A module worth more than 20 credits has only 20 credits disregarded
-- A tied lowest mark across both levels is resolved by disregarding the Level 6 module
-- The indicator score is rounded to the nearest integer before classification
-- Disregarding credits does not award credit for a failed module; award requirements must still be met
+- This release implements the **Westminster 2026–27 Honours Degree Scheme**;
+  there is no year selector. The source is [Section 17, §§4.4 and 7.3](https://www.westminster.ac.uk/sites/default/public-files/general-documents/academic-regulations-2026-27-section-17-framework-for-ug-taught-courses.pdf).
+- Standard calculation requires 120 numeric-mark credits at Level 5 and 120 at
+  Level 6. Calculate two provisional indicators: remove the lowest 20 credits
+  from Level 5, and separately remove the lowest 20 credits from Level 6.
+  **Use the higher indicator before rounding**, retaining 220 credits.
+- A module larger than 20 credits loses only 20 credits. For example, a
+  40-credit project still contributes its other 20 credits when selected.
+- When both provisional indicators are exactly equal, choosing Level 6 for the
+  displayed breakdown is a deterministic convention; it does not change the score.
+- Module marks and level averages are not rounded. Decimal strings and BigInt
+  fractions preserve exact comparison and final nearest-integer rounding, with
+  exact halves rounding upwards. Thus an exact 69.5 produces 70, while
+  69.499999999999999999999999 produces 69.
+- Summary level averages show up to two decimal places; `≈` identifies a
+  rounded display. The breakdown shows up to six decimal digits followed by an
+  ellipsis if further digits remain. Display formatting never determines the class. Numeric
+  summary fields returned by the library are approximate; selection, pass
+  checks, displayed strings, and the rounded result use exact arithmetic.
+- A mark such as 70.66 or 70.666 is preserved through entry and storage. The
+  defensive input-length limit is 1,024 characters; excessive or malformed
+  input produces a visible error and withholds the result instead of silently
+  reusing the previous mark. Use final recorded module marks, including any
+  referral/retake caps or qualifying-component adjustments.
+- The recognised-credit checkbox applies only when there are **no Level 5
+  marks** because those credits were transferred or recognised. All 120 Level 6
+  credits then count at 100%, and none are disregarded. Other entered Level 5
+  marks are retained for switching back but excluded while this option is enabled.
+- Original Level 5/6 marks below 40 block an Honours classification even when
+  their credits are disregarded. Zero is an entered failing mark; a blank is
+  missing. Other award requirements must also be met.
+- The library rejects invalid credits, unsupported totals/levels, duplicate IDs,
+  non-finite or out-of-range marks. It accepts positive multiples of 20 credits
+  up to 120 per module. Both forms use the configured CS/SE structures and
+  20-credit custom optional replacements only.
+
+This worksheet assumes the necessary Level 4 or recognised credits have been
+achieved. It does not verify grade-only modules, partial credit transfers,
+qualifying assessments, course/partner exceptions, or other award schemes.
+Additional placement/study-abroad credits must be excluded. Use a modern browser
+with BigInt support. Recheck the official regulations before updating the
+declared academic year; the app does not change schemes automatically.
+
+### Verification
+
+```powershell
+npm test
+npm run lint
+npm run build
+
+# Optional extended independent arithmetic check (reproducible seed 20261113):
+$env:CLASSIFICATION_CHECK_CASES = '200000'
+node node_modules/tsx/dist/cli.mjs --test tests/classification-accuracy.test.ts
+```
+
+The default test suite includes 20,000 generated records checked against an
+independent reference that expands modules into 20-credit units and enumerates
+all possible removals. It also covers both course configurations, exact class
+boundaries, decimals beyond Number precision, invalid credit data, original
+failed marks, saved-draft migration, and recognised-credit calculations.
 
 ---
 

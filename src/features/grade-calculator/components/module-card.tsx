@@ -5,6 +5,7 @@ import { Label } from "@/components/ui/label";
 import { calculatorThemes } from "../theme";
 import type { CourseConfig, CourseModule, LevelId, ModuleType } from "../types";
 import { MarkInput } from "./mark-input";
+import type { Mark } from "@/lib/marks";
 
 type ModuleCardProps = {
   module: CourseModule;
@@ -13,7 +14,7 @@ type ModuleCardProps = {
   theme: CourseConfig["theme"];
   optionalLimitReached: boolean;
   selected: boolean;
-  mark?: number;
+  mark?: Mark;
   onMarkChange: (value: string) => void;
   onOptionalToggle: (checked: boolean) => void;
   onRemove: () => void;

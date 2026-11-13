@@ -28,3 +28,9 @@ test("a failed module prevents an Honours classification at every passing score 
     );
   }
 });
+
+test("invalid or unrounded scores cannot produce a passing class", () => {
+  for (const score of [NaN, Infinity, -Infinity, -1, 101, 69.5]) {
+    assert.equal(getClassificationBand(score).label, "No Honours Classification");
+  }
+});

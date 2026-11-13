@@ -9,7 +9,7 @@ import type {
   OtherModule,
 } from "./types";
 
-export const CALCULATOR_STORAGE_VERSION = 1;
+export const CALCULATOR_STORAGE_VERSION = 2;
 
 // Keep corrupt storage from causing an unbounded synchronous JSON parse.
 const MAX_DRAFT_LENGTH = 1_000_000;
@@ -31,11 +31,11 @@ function createEmptyLevelState(): LevelState {
 }
 
 export function createEmptyCalculatorState(): CalculatorState {
-  return { l5: createEmptyLevelState(), l6: createEmptyLevelState() };
+  return { l5: createEmptyLevelState(), l6: createEmptyLevelState(), level6Only: false };
 }
 
 export function hasCalculatorDraft(state: CalculatorState): boolean {
-  return LEVELS.some((level) => {
+  return state.level6Only || LEVELS.some((level) => {
     const draft = state[level];
     return (
       Object.keys(draft.coreMarks).length > 0 ||
@@ -65,6 +65,7 @@ export function serializeCalculatorDraft(
   return JSON.stringify({
     version: CALCULATOR_STORAGE_VERSION,
     course: config.id,
+    level6Only: state.level6Only,
     levels: { l5: serializeLevel("l5"), l6: serializeLevel("l6") },
     updatedAt: new Date().toISOString(),
   });
@@ -79,18 +80,10 @@ function parseMarks(value: unknown, allowedIds: Set<string>): Marks | null {
 
   const marks: Marks = {};
   for (const [id, mark] of Object.entries(value)) {
-    if (
-      !allowedIds.has(id) ||
-      typeof mark !== "number" ||
-      !Number.isFinite(mark) ||
-      mark < 0 ||
-      mark > 100
-    ) {
-      return null;
-    }
-    // Older drafts allowed arbitrary precision. Keep the rest of the draft
-    // and require re-entry of these marks instead of silently rounding them.
-    if (isValidMark(mark)) marks[id] = mark;
+    if (!allowedIds.has(id) || !isValidMark(mark)) return null;
+    // Retain numeric legacy marks without rounding them. New marks are decimal
+    // strings, including any digits that would be lost by a Number conversion.
+    marks[id] = mark;
   }
   return marks;
 }
@@ -174,7 +167,8 @@ export function parseCalculatorDraft(
     const value: unknown = JSON.parse(raw);
     if (
       !isRecord(value) ||
-      value.version !== CALCULATOR_STORAGE_VERSION ||
+      (value.version !== 1 && value.version !== CALCULATOR_STORAGE_VERSION) ||
+      (value.version === CALCULATOR_STORAGE_VERSION && typeof value.level6Only !== "boolean") ||
       value.course !== config.id ||
       typeof value.updatedAt !== "string" ||
       !Number.isFinite(Date.parse(value.updatedAt)) ||
@@ -185,7 +179,7 @@ export function parseCalculatorDraft(
 
     const l5 = parseLevel(value.levels.l5, config, "l5");
     const l6 = parseLevel(value.levels.l6, config, "l6");
-    return l5 && l6 ? { l5, l6 } : null;
+    return l5 && l6 ? { l5, l6, level6Only: value.version === 1 ? false : value.level6Only as boolean } : null;
   } catch {
     return null;
   }

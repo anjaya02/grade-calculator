@@ -1,6 +1,8 @@
 "use client";
 
 import Footer from "@/components/Footer";
+import { Checkbox } from "@/components/ui/checkbox";
+import { HONOURS_REGULATIONS } from "@/lib/degree-classification";
 import { useCalculationUsage } from "../hooks/use-calculation-usage";
 import { useGradeCalculator } from "../hooks/use-grade-calculator";
 import type { CourseConfig } from "../types";
@@ -34,23 +36,42 @@ export function GradeCalculator({ config }: GradeCalculatorProps) {
           <p className="mt-3 max-w-xl text-sm leading-6 text-muted-foreground">
             Select your optional modules and enter your marks. Your weighted
             result updates as soon as every required mark is in. Enter marks from
-            0 to 100 with up to 2 decimal places.
+            0 to 100, including all recorded decimal places.
           </p>
+          <p className="mt-2 text-xs text-muted-foreground">
+            Westminster {HONOURS_REGULATIONS.year} Honours Degree Scheme. Enter final
+            module marks, including any referral or retake adjustments.
+          </p>
+          <div className="mt-5 max-w-xl text-xs leading-5">
+            <label className="flex cursor-pointer items-start gap-2.5" htmlFor="level6-only">
+              <Checkbox id="level6-only" checked={controller.level6Only}
+                disabled={!controller.isReady}
+                onCheckedChange={(checked) => controller.setLevel6Only(checked === true)} />
+              <span>My Level 5 credits were transferred or recognised, with no Level 5 marks.</span>
+            </label>
+            {controller.level6Only && (
+              <p className="mt-2 text-muted-foreground">
+                All 120 Level 6 credits count at 100%; no credits are disregarded.
+                Partial credit transfers are not supported by this worksheet.
+              </p>
+            )}
+          </div>
           <DraftControls controller={controller} />
         </div>
 
         <div className="grid items-start gap-8 lg:grid-cols-[minmax(0,1fr)_340px] xl:grid-cols-[minmax(0,1fr)_360px] xl:gap-10">
           <fieldset
+            key={controller.formVersion}
             disabled={!controller.isReady}
             aria-busy={!controller.isReady}
-            className="grid min-w-0 items-start gap-8 xl:grid-cols-2"
+            className={`grid min-w-0 items-start gap-8 ${controller.level6Only ? "" : "xl:grid-cols-2"}`}
           >
             <legend className="sr-only">Module marks</legend>
-            <LevelSection config={config} controller={controller} level="l5" />
+            {!controller.level6Only && <LevelSection config={config} controller={controller} level="l5" />}
             <LevelSection config={config} controller={controller} level="l6" />
           </fieldset>
           <aside
-            className="min-w-0 lg:top-24 lg:[@media(min-height:50rem)]:sticky"
+            className="min-w-0"
             aria-label="Your classification summary"
           >
             <ResultsCard controller={controller} config={config} />
@@ -60,6 +81,7 @@ export function GradeCalculator({ config }: GradeCalculatorProps) {
         <div className="mt-12">
           <CalculationMethod
             optionalModulesPerLevel={config.optionalModulesPerLevel}
+            level6Only={controller.level6Only}
           />
           <Disclaimer />
         </div>

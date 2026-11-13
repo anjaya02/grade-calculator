@@ -1,16 +1,18 @@
 import { ChevronDown } from "lucide-react";
 import { describeOptionalCount } from "../classification";
+import { HONOURS_REGULATIONS } from "@/lib/degree-classification";
 
-type CalculationMethodProps = { optionalModulesPerLevel: number };
+type CalculationMethodProps = { optionalModulesPerLevel: number; level6Only: boolean };
 
 export function CalculationMethod({
   optionalModulesPerLevel,
+  level6Only,
 }: CalculationMethodProps) {
   const rules = [
-    "The lowest-mark module across Levels 5 and 6 is disregarded from the best 220 credits.",
+    "Two provisional indicators are calculated: disregard the lowest 20 Level 5 credits, then separately the lowest 20 Level 6 credits. Use the higher indicator.",
     "If the lowest module is worth more than 20 credits, only 20 credits are disregarded. Its remaining credits still count.",
     `Choose exactly ${describeOptionalCount(optionalModulesPerLevel)} at each level.`,
-    "A tie between Level 5 and Level 6 lowest marks is resolved by disregarding the Level 6 module.",
+    "Use final recorded module marks with all available decimal places. Module marks and level averages are not rounded during calculation.",
     "The indicator score is rounded to the nearest integer before classification is assigned.",
     "Disregarding credits does not turn a failed module into a pass. Every Level 5 and 6 module must still receive credit before an Honours classification can be assigned.",
   ];
@@ -36,13 +38,24 @@ export function CalculationMethod({
             The weighted indicator
           </p>
           <p className="text-xl font-medium leading-relaxed text-primary">
-            ⅓ × Level 5 average
-            <br />
-            <span className="text-muted-foreground">+</span> ⅔ × Level 6 average
+            {level6Only ? "100% × Level 6 average" : (
+              <>
+                ⅓ × Level 5 average<br />
+                <span className="text-muted-foreground">+</span> ⅔ × Level 6 average
+              </>
+            )}
           </p>
+          <a href={HONOURS_REGULATIONS.sourceUrl} target="_blank" rel="noreferrer"
+            className="mt-4 block text-xs leading-5 underline underline-offset-4">
+            Westminster {HONOURS_REGULATIONS.year} regulations, §§4.4 and 7.3
+          </a>
         </div>
         <ol className="grid gap-x-8 gap-y-5 sm:grid-cols-2">
-          {rules.map((rule, index) => (
+          {(level6Only ? [
+            "Where all Level 5 credit is recognised or transferred with no Level 5 marks, all 120 Level 6 credits count at 100%. No credits are disregarded.",
+            `Choose ${describeOptionalCount(optionalModulesPerLevel)} at Level 6 and enter every final module mark.`,
+            rules[3], rules[4], rules[5],
+          ] : rules).map((rule, index) => (
             <li
               key={rule}
               className="flex gap-3 text-xs leading-6 text-muted-foreground"

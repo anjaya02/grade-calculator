@@ -50,7 +50,7 @@ test("complete calculations roundtrip for both course configurations", () => {
   }
 });
 
-test("legacy overprecise marks need re-entry while other marks and selections survive", () => {
+test("legacy marks retain all available precision along with selections", () => {
   for (const config of [computerScienceConfig, softwareEngineeringConfig]) {
     const state = createEmptyCalculatorState();
     for (const level of ["l5", "l6"] as const) {
@@ -63,11 +63,14 @@ test("legacy overprecise marks need re-entry while other marks and selections su
       state[level].selectedOptionals = new Set([selected]);
       state[level].optionalMarks = { [selected]: level === "l5" ? 39.999 : 0.001 };
     }
-    const restored = parseCalculatorDraft(serializeCalculatorDraft(config, state), config);
+    const legacy = JSON.parse(serializeCalculatorDraft(config, state));
+    legacy.version = 1;
+    delete legacy.level6Only;
+    const restored = parseCalculatorDraft(JSON.stringify(legacy), config);
     assert.ok(restored);
     for (const level of ["l5", "l6"] as const) {
-      assert.deepEqual(restored[level].coreMarks, { [config.modules[level].core[1].id]: 82.34 });
-      assert.deepEqual(restored[level].optionalMarks, {});
+      assert.deepEqual(restored[level].coreMarks, state[level].coreMarks);
+      assert.deepEqual(restored[level].optionalMarks, state[level].optionalMarks);
       assert.deepEqual(restored[level].selectedOptionals, state[level].selectedOptionals);
       assert.deepEqual(restored[level].otherModules, state[level].otherModules);
     }
@@ -130,8 +133,9 @@ test("corrupt, outdated, malformed, and excessively large payloads are rejected 
   }
   for (const mutate of [
     (value: ReturnType<typeof draft>) => { value.version = 0; },
-    (value: ReturnType<typeof draft>) => { value.version = 2; },
+    (value: ReturnType<typeof draft>) => { value.version = CALCULATOR_STORAGE_VERSION + 1; },
     (value: ReturnType<typeof draft>) => { value.version = "1"; },
+    (value: ReturnType<typeof draft>) => { value.level6Only = "true"; },
     (value: ReturnType<typeof draft>) => { value.updatedAt = "invalid"; },
     (value: ReturnType<typeof draft>) => { delete value.updatedAt; },
     (value: ReturnType<typeof draft>) => { value.levels = []; },
@@ -149,7 +153,7 @@ test("corrupt, outdated, malformed, and excessively large payloads are rejected 
 });
 
 test("invalid marks, unknown core IDs, and prototype-like keys are rejected", () => {
-  for (const mark of [-0.01, 100.01, "75", null, true, {}, []]) {
+  for (const mark of [-0.01, 100.01, "100.00000000000000001", "75%", null, true, {}, []]) {
     const value = draft();
     value.levels.l5.coreMarks["5COSC019C"] = mark;
     assert.equal(parseCalculatorDraft(JSON.stringify(value), computerScienceConfig), null);
@@ -163,6 +167,14 @@ test("invalid marks, unknown core IDs, and prototype-like keys are rejected", ()
   const raw = JSON.stringify(value).replace('"coreMarks":{}', '"coreMarks":{"5COSC019C":1e999}');
   assert.equal(parseCalculatorDraft(raw, computerScienceConfig), null);
   assert.equal(({} as Record<string, unknown>).polluted, undefined);
+});
+
+test("decimal strings and the recognised-credit mode survive saving exactly", () => {
+  const state = createEmptyCalculatorState();
+  state.level6Only = true;
+  state.l6.coreMarks["6COSC023C"] = "69.499999999999999999999999";
+  assert.deepEqual(parseCalculatorDraft(serializeCalculatorDraft(computerScienceConfig, state), computerScienceConfig), state);
+  assert.equal(hasCalculatorDraft(state), true);
 });
 
 test("optional selections enforce known IDs, unique IDs, and each course limit", () => {

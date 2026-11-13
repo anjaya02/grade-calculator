@@ -4,7 +4,7 @@ import { SiteBrand } from "@/components/SiteBrand";
 
 export function CalculatorHeader() {
   return (
-    <header className="sticky top-0 z-40 border-b border-border bg-background/95 backdrop-blur-sm">
+    <header className="relative z-40 border-b border-border bg-background/95 backdrop-blur-sm lg:sticky lg:top-0">
       <div className="mx-auto flex h-[72px] max-w-[1440px] items-center justify-between gap-3 px-5 sm:px-8">
         <SiteBrand />
         <nav

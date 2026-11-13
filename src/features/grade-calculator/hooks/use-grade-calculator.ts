@@ -44,6 +44,7 @@ type LevelAction =
 
 type CalculatorAction =
   | LevelAction
+  | { type: "set-level6-only"; enabled: boolean }
   | { type: "restore"; course: CourseConfig["id"]; levels: CalculatorState }
   | { type: "reset" };
 
@@ -51,6 +52,7 @@ type CalculatorSession = {
   course: CourseConfig["id"] | null;
   levels: CalculatorState;
   hasUserChanges: boolean;
+  formVersion: number;
 };
 
 export type DraftStorageStatus =
@@ -137,8 +139,11 @@ function calculatorReducer(
       const name = levelState.newModuleName.trim();
       if (!name) return state;
 
+      const prefix = `OTHER-${action.level.toUpperCase()}-`;
+      let suffix = Date.now();
+      while (levelState.otherModules.some((module) => module.id === `${prefix}${suffix}`)) suffix++;
       const newModule: OtherModule = {
-        id: `OTHER-${action.level.toUpperCase()}-${Date.now()}`,
+        id: `${prefix}${suffix}`,
         name,
         credits: 20,
         isOther: true,
@@ -174,17 +179,22 @@ function sessionReducer(
   action: CalculatorAction,
 ): CalculatorSession {
   if (action.type === "restore") {
-    return { course: action.course, levels: action.levels, hasUserChanges: false };
+    return { ...state, course: action.course, levels: action.levels, hasUserChanges: false };
   }
   if (action.type === "reset") {
     return {
       ...state,
       levels: createEmptyCalculatorState(),
       hasUserChanges: false,
+      formVersion: state.formVersion + 1,
     };
   }
   // Ignore interactions until the initial browser draft has been read.
   if (state.course === null) return state;
+
+  if (action.type === "set-level6-only") {
+    return { ...state, levels: { ...state.levels, level6Only: action.enabled }, hasUserChanges: true };
+  }
 
   const levels = calculatorReducer(state.levels, action);
   if (levels === state.levels) return state;
@@ -223,6 +233,7 @@ function buildModuleList(
   const modules: DegreeModule[] = [];
 
   (["l5", "l6"] as const).forEach((level) => {
+    if (level === "l5" && state.level6Only) return;
     const levelState = state[level];
 
     config.modules[level].core.forEach((module) => {
@@ -256,6 +267,7 @@ export function useGradeCalculator(config: CourseConfig) {
     course: null,
     levels: createEmptyCalculatorState(),
     hasUserChanges: false,
+    formVersion: 0,
   }));
   const [storageStatus, setStorageStatus] =
     useState<DraftStorageStatus>("loading");
@@ -305,12 +317,13 @@ export function useGradeCalculator(config: CourseConfig) {
   }, [config, levels, isReady, hasUserChanges, hasDraft]);
 
   const isComplete =
-    isLevelComplete(config, levels, "l5") &&
+    (levels.level6Only || isLevelComplete(config, levels, "l5")) &&
     isLevelComplete(config, levels, "l6");
-  const results = isComplete
+  const results = isReady && isComplete
     ? calculateHonoursClassification(buildModuleList(config, levels))
     : null;
   const hasOtherModulesSelected = (["l5", "l6"] as const).some((level) => {
+    if (level === "l5" && levels.level6Only) return false;
     const otherIds = new Set(
       levels[level].otherModules.map((module) => module.id),
     );
@@ -319,6 +332,8 @@ export function useGradeCalculator(config: CourseConfig) {
 
   return {
     levels,
+    level6Only: levels.level6Only,
+    formVersion: session.formVersion,
     results,
     hasOtherModulesSelected,
     isReady,
@@ -327,8 +342,8 @@ export function useGradeCalculator(config: CourseConfig) {
     canReset:
       hasDraft ||
       storageStatus === "reset-error" ||
-      Object.values(levels).some(
-        (level) => level.showAddForm || level.newModuleName !== "",
+      (["l5", "l6"] as const).some(
+        (level) => levels[level].showAddForm || levels[level].newModuleName !== "",
       ),
     reset: () => {
       // Removing this course's key leaves the other course's draft untouched.
@@ -340,6 +355,7 @@ export function useGradeCalculator(config: CourseConfig) {
       }
       dispatch({ type: "reset" });
     },
+    setLevel6Only: (enabled: boolean) => dispatch({ type: "set-level6-only", enabled }),
     setMark: (
       level: LevelId,
       moduleType: ModuleType,

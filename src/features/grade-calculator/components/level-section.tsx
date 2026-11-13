@@ -20,7 +20,7 @@ export function LevelSection({ config, controller, level }: LevelSectionProps) {
           Level {levelNumber} modules
         </h2>
         <span className="shrink-0 whitespace-nowrap text-[10px] text-muted-foreground">
-          {level === "l5" ? "⅓" : "⅔"} weighting
+          {controller.level6Only ? "100%" : level === "l5" ? "⅓" : "⅔"} weighting
         </span>
       </div>
       <ModuleSection
