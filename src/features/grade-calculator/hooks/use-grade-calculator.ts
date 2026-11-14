@@ -44,7 +44,6 @@ type LevelAction =
 
 type CalculatorAction =
   | LevelAction
-  | { type: "set-level6-only"; enabled: boolean }
   | { type: "restore"; course: CourseConfig["id"]; levels: CalculatorState }
   | { type: "reset" };
 
@@ -192,10 +191,6 @@ function sessionReducer(
   }
   // Ignore interactions until the initial browser draft has been read.
   if (state.course === null) return state;
-
-  if (action.type === "set-level6-only") {
-    return { ...state, levels: { ...state.levels, level6Only: action.enabled }, hasUserChanges: true };
-  }
 
   const levels = calculatorReducer(state.levels, action);
   if (levels === state.levels) return state;
@@ -356,7 +351,6 @@ export function useGradeCalculator(config: CourseConfig) {
       }
       dispatch({ type: "reset" });
     },
-    setLevel6Only: (enabled: boolean) => dispatch({ type: "set-level6-only", enabled }),
     setMark: (
       level: LevelId,
       moduleType: ModuleType,

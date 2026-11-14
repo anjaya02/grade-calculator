@@ -1,7 +1,6 @@
 "use client";
 
 import Footer from "@/components/Footer";
-import { Checkbox } from "@/components/ui/checkbox";
 import { useCalculationUsage } from "../hooks/use-calculation-usage";
 import { useGradeCalculator } from "../hooks/use-grade-calculator";
 import type { CourseConfig } from "../types";
@@ -37,20 +36,6 @@ export function GradeCalculator({ config }: GradeCalculatorProps) {
             result updates as soon as every required mark is in. Enter marks from
             0 to 100, including all recorded decimal places.
           </p>
-          <div className="mt-5 max-w-xl text-xs leading-5">
-            <label className="flex cursor-pointer items-start gap-2.5" htmlFor="level6-only">
-              <Checkbox id="level6-only" checked={controller.level6Only}
-                disabled={!controller.isReady}
-                onCheckedChange={(checked) => controller.setLevel6Only(checked === true)} />
-              <span>My Level 5 credits were transferred or recognised, with no Level 5 marks.</span>
-            </label>
-            {controller.level6Only && (
-              <p className="mt-2 text-muted-foreground">
-                All 120 Level 6 credits count at 100%; no credits are disregarded.
-                Partial credit transfers are not supported by this worksheet.
-              </p>
-            )}
-          </div>
           <DraftControls controller={controller} />
         </div>
 

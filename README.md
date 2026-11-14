@@ -13,7 +13,6 @@ Built with **Next.js**, **TypeScript**, **Tailwind CSS**, and **shadcn/ui** for 
 - 🔄 Uses the best 220 credits across Levels 5 and 6
 - 📌 Compares both credit-drop options under the Westminster 2026–27 rules
 - 🔢 Preserves decimal marks and rounds the final result with exact arithmetic
-- 📚 Supports recognised Level 5 credit with no Level 5 marks
 - 🏷️ Current module names with visible previous names for earlier cohorts
 - 📎 SE & CS pathways supported
 - 📱 Mobile-responsive UI
@@ -41,8 +40,10 @@ Drafts carry a storage version; bump `CALCULATOR_STORAGE_VERSION` in
 change makes earlier drafts incompatible. Transient custom-module form text and
 calculated results are not persisted; results are recalculated from the restored
 marks and current course configuration. Version 2 preserves version 1 numeric
-marks, stores new marks as decimal strings, and saves the recognised-credit
-choice. Existing marks are recalculated using the 2026–27 rules. A future
+marks and stores new marks as decimal strings. CS and SE both require Level 5
+and Level 6 marks; the retired Level 6-only choice in older drafts is ignored
+without losing saved marks or selections. Existing marks are recalculated
+using the 2026–27 rules. A future
 incompatible schema change must also review the explicit version 1 migration.
 
 Module labels use the supplied 2026–27 CS and SE lists. Renamed modules show
@@ -142,10 +143,6 @@ Indicator Score = (1/3 × Level 5 Average) + (2/3 × Level 6 Average)
   input produces a visible error and withholds the result instead of silently
   reusing the previous mark. Use final recorded module marks, including any
   referral/retake caps or qualifying-component adjustments.
-- The recognised-credit checkbox applies only when there are **no Level 5
-  marks** because those credits were transferred or recognised. All 120 Level 6
-  credits then count at 100%, and none are disregarded. Other entered Level 5
-  marks are retained for switching back but excluded while this option is enabled.
 - Original Level 5/6 marks below 40 block an Honours classification even when
   their credits are disregarded. Zero is an entered failing mark; a blank is
   missing. Other award requirements must also be met.

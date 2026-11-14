@@ -238,12 +238,29 @@ test("invalid marks, unknown core IDs, and prototype-like keys are rejected", ()
   assert.equal(({} as Record<string, unknown>).polluted, undefined);
 });
 
-test("decimal strings and the recognised-credit mode survive saving exactly", () => {
+test("decimal strings survive saving exactly", () => {
   const state = createEmptyCalculatorState();
-  state.level6Only = true;
   state.l6.coreMarks["6COSC023C"] = "69.499999999999999999999999";
   assert.deepEqual(parseCalculatorDraft(serializeCalculatorDraft(computerScienceConfig, state), computerScienceConfig), state);
   assert.equal(hasCalculatorDraft(state), true);
+});
+
+test("older Level 6-only drafts require both levels without losing marks or selections", () => {
+  for (const config of [computerScienceConfig, softwareEngineeringConfig]) {
+    const state = createEmptyCalculatorState();
+    for (const level of ["l5", "l6"] as const) {
+      state[level].coreMarks[config.modules[level].core[0].id] = "81.2345";
+      const optional = config.modules[level].optional[0].id;
+      state[level].selectedOptionals.add(optional);
+      state[level].optionalMarks[optional] = "69.499999999999999999999999";
+    }
+    const legacy = JSON.parse(serializeCalculatorDraft(config, state));
+    legacy.level6Only = true;
+    const restored = restoreCalculatorDraft(JSON.stringify(legacy), config);
+    assert.ok(restored);
+    assert.equal(restored.needsReview, false);
+    assert.deepEqual(restored.state, state);
+  }
 });
 
 test("optional selections enforce known IDs, unique IDs, and each course limit", () => {

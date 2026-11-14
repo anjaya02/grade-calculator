@@ -210,7 +210,8 @@ export function restoreCalculatorDraft(
     return {
       state: {
         l5: l5.state, l6: l6.state,
-        level6Only: value.version === 1 ? false : value.level6Only as boolean,
+        // IIT CS and SE always require both levels, including in older drafts.
+        level6Only: false,
       } satisfies CalculatorState,
       needsReview: l5.needsReview || l6.needsReview,
     };
